@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 async function setupDatabase() {
-  const dbName = process.env.DB_NAME || 'open-paste';
+  const dbName = process.env.DB_NAME || 'open-kai';
   
   const client = new Client({
     host: process.env.DB_HOST || 'localhost',

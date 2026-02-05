@@ -46,15 +46,15 @@ function App() {
       return { view: 'landing' as const };
     }
 
-    if (pathname === '/open-paste') {
+    if (pathname === '/open-kai') {
       return { view: 'openpaste_hub' as const };
     }
 
-    if (pathname === '/open-paste/send') {
+    if (pathname === '/open-kai/send') {
       return { view: 'openpaste_send' as const };
     }
 
-    if (pathname === '/open-paste/history') {
+    if (pathname === '/open-kai/history') {
       return { view: 'history' as const };
     }
 
@@ -74,7 +74,7 @@ function App() {
       return { view: 'minusurl' as const };
     }
 
-    const openPasteMatch = pathname.match(/^\/open-paste\/([a-z]{3}[0-9]{3})$/);
+    const openPasteMatch = pathname.match(/^\/open-kai\/([a-z]{3}[0-9]{3})$/);
     if (openPasteMatch) {
       return { view: 'paste' as const, pasteId: openPasteMatch[1] };
     }
@@ -88,7 +88,7 @@ function App() {
     const legacyMatch = pathname.match(/^\/([a-z]{3}[0-9]{3})$/);
     if (legacyMatch) {
       const id = legacyMatch[1];
-      window.history.replaceState({}, '', `/open-paste/${id}`);
+      window.history.replaceState({}, '', `/open-kai/${id}`);
       return { view: 'paste' as const, pasteId: id };
     }
 
@@ -179,7 +179,7 @@ function App() {
           <BackButton />
           <HomePage
             onNavigate={navigate}
-            onPasteCreated={(newPasteId) => navigate(`/open-paste/${newPasteId}`)}
+            onPasteCreated={(newPasteId) => navigate(`/open-kai/${newPasteId}`)}
           />
         </div>
       </div>

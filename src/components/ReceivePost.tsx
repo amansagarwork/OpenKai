@@ -110,7 +110,7 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
 
             <button
               type="button"
-              onClick={() => onNavigate('/open-paste')}
+              onClick={() => onNavigate('/open-kai')}
               className="px-4 py-2 bg-white/15 hover:bg-white/25 text-white rounded-lg font-medium transition-colors"
             >
               Back
@@ -172,7 +172,7 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => onNavigate(`/open-paste/${paste.pasteId}`)}
+                      onClick={() => onNavigate(`/open-kai/${paste.pasteId}`)}
                       className="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg font-medium transition-colors"
                     >
                       Open

@@ -119,7 +119,7 @@ export const createPaste = async (req: Request, res: Response) => {
 
       res.status(201).json({
         pasteId,
-        url: `${process.env.BASE_URL || 'http://localhost:5173'}/open-paste/${pasteId}`,
+        url: `${process.env.BASE_URL || 'http://localhost:5173'}/open-kai/${pasteId}`,
         deleteToken
       });
     } finally {
@@ -227,7 +227,7 @@ export const getUserHistory = async (req: Request, res: Response) => {
         content: p.content.substring(0, 100) + (p.content.length > 100 ? '...' : ''),
         createdAt: p.created_at,
         expiresAt: p.expires_at,
-        url: `/open-paste/${p.paste_id}`,
+        url: `/open-kai/${p.paste_id}`,
       })),
       ...urlsResult.rows.map((u: any) => ({
         id: u.short_id,

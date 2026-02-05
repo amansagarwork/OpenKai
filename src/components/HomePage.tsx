@@ -45,7 +45,7 @@ export default function HomePage({ onPasteCreated }: HomePageProps) {
       }
 
       const data = await response.json();
-      setCreatedUrl(`${window.location.origin}/open-paste/${data.pasteId}`);
+      setCreatedUrl(`${window.location.origin}/open-kai/${data.pasteId}`);
       setDeleteToken(data.deleteToken);
       onPasteCreated(data.pasteId);
     } catch (err) {

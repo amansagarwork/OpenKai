@@ -132,7 +132,7 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
               <div className="w-full max-w-xs mx-auto">
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
                   <button
-                    onClick={() => onNavigate('/open-paste')}
+                    onClick={() => onNavigate('/open-kai')}
                     className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     <FileText className="w-4 h-4 flex-shrink-0" />
@@ -192,7 +192,7 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
                 </div>
               </div>
               <button
-                onClick={() => onNavigate('/open-paste')}
+                onClick={() => onNavigate('/open-kai')}
                 className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg font-medium transition-colors"
               >
                 New Paste

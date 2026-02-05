@@ -18,7 +18,7 @@ export default function OpenPasteHub({ onNavigate }: OpenPasteHubProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2">
               <button
                 type="button"
-                onClick={() => onNavigate('/open-paste/send')}
+                onClick={() => onNavigate('/open-kai/send')}
                 className="group relative p-10 sm:p-14 flex flex-col items-center justify-center gap-5 text-slate-900 hover:bg-slate-50 transition-colors border-b sm:border-b-0 sm:border-r border-slate-200"
               >
                 <Send className="w-10 h-10 text-slate-700 group-hover:text-slate-900 transition-colors" />

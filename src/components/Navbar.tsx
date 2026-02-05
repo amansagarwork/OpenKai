@@ -78,7 +78,7 @@ export default function Navbar({ onNavigate }: NavbarProps) {
                   type="button"
                   onClick={() => {
                     setServicesOpen(false);
-                    onNavigate('/open-paste');
+                    onNavigate('/open-kai');
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors"
                 >
@@ -126,7 +126,7 @@ export default function Navbar({ onNavigate }: NavbarProps) {
                     type="button"
                     onClick={() => {
                       setProfileOpen(false);
-                      onNavigate('/open-paste/history');
+                      onNavigate('/open-kai/history');
                     }}
                     className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors text-slate-800 font-medium"
                   >

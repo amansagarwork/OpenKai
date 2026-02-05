@@ -130,7 +130,7 @@ export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
 
             <button
               type="button"
-              onClick={() => onNavigate('/open-paste')}
+              onClick={() => onNavigate('/open-kai')}
               className="px-4 py-2 bg-white/15 hover:bg-white/25 text-white rounded-lg font-medium transition-colors"
             >
               Back
