@@ -1,12 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import pasteRoutes from './routes/pasteRoutes';
-import authRoutes from './routes/authRoutes';
-import urlRoutes from './routes/urlRoutes';
+import { authRouter, pasteRouter, urlRouter, terminalRouter, lintRouter } from './modules';
 import { query } from './config/db';
 import { cleanupService } from './services/cleanupService';
-import { redirectToOriginalUrl } from './controllers/urlController';
+import { redirectToOriginalUrl } from './modules/url/controllers';
 
 dotenv.config();
 
@@ -33,9 +31,11 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/pastes', pasteRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/urls', urlRoutes);
+app.use('/api/pastes', pasteRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/urls', urlRouter);
+app.use('/api/terminal', terminalRouter);
+app.use('/api/lint', lintRouter);
 
 // URL redirect route (must be before error handler)
 app.get('/u/:shortId', redirectToOriginalUrl);

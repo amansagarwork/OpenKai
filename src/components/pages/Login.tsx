@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, Loader2, LogIn } from 'lucide-react';
-import { setToken } from '../lib/auth';
+import { setToken } from '../../lib/auth';
 
 interface LoginProps {
   onNavigate: (path: string) => void;
@@ -13,11 +13,34 @@ export default function Login({ onNavigate }: LoginProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      return 'Email is required';
+    }
+    if (!emailRegex.test(email.trim())) {
+      return 'Please enter a valid email address';
+    }
+    return '';
+  };
+
   const submit = async () => {
     setError('');
+    setEmailError('');
+    setPasswordError('');
 
-    if (!email.trim() || !password) {
-      setError('Email and password are required');
+    // Client-side validation
+    const emailValidation = validateEmail(email);
+    if (emailValidation) {
+      setEmailError(emailValidation);
+      return;
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
       return;
     }
 
@@ -32,11 +55,21 @@ export default function Login({ onNavigate }: LoginProps) {
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(data?.error || 'Login failed');
+        const errorMsg = data?.error || 'Login failed';
+        // Map backend errors to specific fields
+        if (errorMsg.includes('email') || errorMsg.includes('account')) {
+          setEmailError(errorMsg);
+        } else if (errorMsg.includes('password')) {
+          setPasswordError(errorMsg);
+        } else {
+          setError(errorMsg);
+        }
+        return;
       }
 
       if (typeof data?.token !== 'string') {
-        throw new Error('Invalid server response');
+        setError('Invalid server response');
+        return;
       }
 
       setToken(data.token, rememberMe);
@@ -65,21 +98,41 @@ export default function Login({ onNavigate }: LoginProps) {
               <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
               <input
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError('');
+                }}
                 placeholder="you@company.com"
-                className="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:border-slate-700 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 outline-none transition-all ${
+                  emailError 
+                    ? 'border-red-400 focus:border-red-500 focus:ring-red-100' 
+                    : 'border-slate-300 focus:border-slate-700 focus:ring-slate-200'
+                }`}
               />
+              {emailError && (
+                <p className="mt-1.5 text-sm text-red-600">{emailError}</p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
               <input
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError('');
+                }}
                 type="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:border-slate-700 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 outline-none transition-all ${
+                  passwordError 
+                    ? 'border-red-400 focus:border-red-500 focus:ring-red-100' 
+                    : 'border-slate-300 focus:border-slate-700 focus:ring-slate-200'
+                }`}
               />
+              {passwordError && (
+                <p className="mt-1.5 text-sm text-red-600">{passwordError}</p>
+              )}
             </div>
 
             <div className="flex items-center">

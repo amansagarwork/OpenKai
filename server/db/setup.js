@@ -47,9 +47,11 @@ async function setupDatabase() {
 
     // Read and execute the init-simple.sql file
     const initSql = fs.readFileSync(path.join(__dirname, 'init-simple.sql'), 'utf8');
+    const terminalSql = fs.readFileSync(path.join(__dirname, 'terminal-migration.sql'), 'utf8');
     
     // Execute the SQL
     await newClient.query(initSql);
+    await newClient.query(terminalSql);
 
     console.log('Database tables created/updated successfully');
 

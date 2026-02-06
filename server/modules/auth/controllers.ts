@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { query } from '../config/db';
+import { query } from '../../config/db';
 
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET;

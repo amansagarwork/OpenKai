@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FileText, Clock, Link2, Loader2 } from 'lucide-react';
-import { getToken } from '../lib/auth';
+import { getToken } from '../../lib/auth';
 
 interface HomePageProps {
   onPasteCreated: (pasteId: string) => void;

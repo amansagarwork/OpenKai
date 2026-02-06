@@ -1,4 +1,4 @@
-import { FileText, Link2 } from 'lucide-react';
+import { FileText, Link2, Terminal, Code } from 'lucide-react';
 
 interface ToolsLandingProps {
   onNavigate: (path: string) => void;
@@ -53,6 +53,46 @@ export default function ToolsLanding({ onNavigate }: ToolsLandingProps) {
 
             <div className="mt-5 text-sm text-slate-600">
               Convert long URLs into short, shareable links.
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('/terminal')}
+            className="text-left bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-slate-300 transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-slate-900 rounded-xl">
+                <Terminal className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <div className="text-xl font-semibold text-slate-900">Terminal</div>
+                <div className="text-sm text-slate-600">Execute safe commands</div>
+              </div>
+            </div>
+
+            <div className="mt-5 text-sm text-slate-600">
+              Run terminal commands with command logging and history.
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('/code-health')}
+            className="text-left bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-slate-300 transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-indigo-100 rounded-xl">
+                <Code className="w-7 h-7 text-indigo-600" />
+              </div>
+              <div>
+                <div className="text-xl font-semibold text-slate-900">Code Health</div>
+                <div className="text-sm text-slate-600">Code quality analyzer</div>
+              </div>
+            </div>
+
+            <div className="mt-5 text-sm text-slate-600">
+              Analyze code quality and find lint issues.
             </div>
           </button>
 

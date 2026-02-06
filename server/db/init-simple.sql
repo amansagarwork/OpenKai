@@ -6,12 +6,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Add username column to existing users table if it doesn't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'users' AND column_name = 'username'
+  ) THEN
+    ALTER TABLE users ADD COLUMN username VARCHAR(50) UNIQUE;
+    
+    -- Add username format constraint
+    ALTER TABLE users ADD CONSTRAINT username_format 
+      CHECK (username ~ '^[a-zA-Z0-9_-]{3,50}$');
+    
+    -- Make username NOT NULL (first update existing rows, then add constraint)
+    UPDATE users SET username = 'user_' || id WHERE username IS NULL;
+    ALTER TABLE users ALTER COLUMN username SET NOT NULL;
+  END IF;
+END $$;
+
 -- Create the pastes table
 CREATE TABLE IF NOT EXISTS users (
   id BIGSERIAL PRIMARY KEY,
   email VARCHAR(320) UNIQUE NOT NULL,
+  username VARCHAR(50) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  
+  -- Ensure username follows valid format (alphanumeric, underscores, hyphens, 3-50 chars)
+  CONSTRAINT username_format CHECK (username ~ '^[a-zA-Z0-9_-]{3,50}$')
 );
 
 CREATE TABLE IF NOT EXISTS pastes (

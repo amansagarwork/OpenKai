@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, Copy, FileText, Loader2, Link2, Trash2 } from 'lucide-react';
-import { getToken } from '../lib/auth';
+import { getToken } from '../../lib/auth';
 
 interface PasteHistoryProps {
   onNavigate: (path: string) => void;
@@ -128,13 +128,13 @@ export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
               </div>
             </div>
 
-            <button
+            {/* <button
               type="button"
               onClick={() => onNavigate('/open-kai')}
               className="px-4 py-2 bg-white/15 hover:bg-white/25 text-white rounded-lg font-medium transition-colors"
             >
               Back
-            </button>
+            </button> */}
           </div>
 
           <div className="p-6">

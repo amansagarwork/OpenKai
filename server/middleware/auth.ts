@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 type JwtPayload = {
   userId: number;
   email: string;
+  username: string;
 };
 
 function getJwtSecret() {

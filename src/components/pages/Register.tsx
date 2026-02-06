@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, Loader2, UserPlus } from 'lucide-react';
-import { setToken } from '../lib/auth';
+import { setToken } from '../../lib/auth';
 
 interface RegisterProps {
   onNavigate: (path: string) => void;
@@ -8,6 +8,7 @@ interface RegisterProps {
 
 export default function Register({ onNavigate }: RegisterProps) {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -15,8 +16,13 @@ export default function Register({ onNavigate }: RegisterProps) {
   const submit = async () => {
     setError('');
 
-    if (!email.trim() || !password) {
-      setError('Email and password are required');
+    if (!email.trim() || !password || !username.trim()) {
+      setError('Email, username, and password are required');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_-]{3,50}$/.test(username.trim())) {
+      setError('Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens');
       return;
     }
 
@@ -31,7 +37,7 @@ export default function Register({ onNavigate }: RegisterProps) {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({ email: email.trim(), username: username.trim(), password }),
       });
 
       const data = await response.json().catch(() => ({}));
@@ -65,6 +71,17 @@ export default function Register({ onNavigate }: RegisterProps) {
           </div>
 
           <div className="p-6 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Username</label>
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="username123"
+                className="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:border-slate-700 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+              />
+              <p className="text-xs text-slate-500 mt-1">3-50 characters: letters, numbers, underscores, hyphens</p>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
               <input

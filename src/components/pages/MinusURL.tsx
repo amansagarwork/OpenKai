@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link2, Loader2, Copy, Check, ExternalLink } from 'lucide-react';
-import { getToken } from '../lib/auth';
+import { getToken } from '../../lib/auth';
 
 interface MinusURLProps {
   onNavigate: (path: string) => void;
