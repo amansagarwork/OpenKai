@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Filter, Menu, X } from "lucide-react";
+import { ChevronDown, Component, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { clearToken, getEmailFromToken, getToken, getUsernameFromToken } from "../../lib/auth";
 import { slideInLeft, backdropFade, buttonTap } from "../../lib/animations";
@@ -70,9 +70,9 @@ export default function Navbar({ onNavigate }: NavbarProps) {
               className="flex items-center gap-3 text-slate-900 hover:text-slate-700 transition-colors"
             >
               <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-900 text-white">
-                <Filter className="w-5 h-5" />
+                <Component className="w-5 h-5" />
               </span>
-              <span className="text-lg font-semibold">A Tools</span>
+              <span className="text-lg font-semibold">OpenKai</span>
             </motion.button>
 
             {/* Desktop: Services + Auth */}

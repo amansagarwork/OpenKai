@@ -15,6 +15,8 @@ import Profile from './components/pages/Profile';
 import Terminal from './components/pages/Terminal';
 import TerminalSessions from './components/pages/TerminalSessions';
 import CodeHealth from './components/pages/CodeHealth';
+import AuthModal from './components/core/AuthModal';
+import { getToken } from './lib/auth';
 
 const MAX_WIDTH = 'max-w-[900px]';
 
@@ -26,16 +28,18 @@ function Container({ children, className = '' }: { children: React.ReactNode; cl
   );
 }
 
-function BackButton() {
+function BackButton({ onNavigate }: { onNavigate: (path: string) => void }) {
   return (
-    <button
-      type="button"
-      onClick={() => window.history.back()}
-      className="flex items-center gap-2 px-4 py-2 mt-4 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors mb-4"
-    >
-      <ArrowLeft className="w-4 h-4" />
-      <span className="font-medium">Back</span>
-    </button>
+    <div className="mt-4">
+      <button
+        type="button"
+        onClick={() => onNavigate('/')}
+        className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors font-medium"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </button>
+    </div>
   );
 }
 
@@ -58,6 +62,11 @@ function App() {
   >({
     view: 'landing',
   });
+
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
+  const [authFeature, setAuthFeature] = useState<string>('this feature');
+  const isLoggedIn = !!getToken();
 
   const parseRoute = (pathname: string) => {
     if (pathname === '/' || pathname === '') {
@@ -109,9 +118,15 @@ function App() {
       return { view: 'terminal' as const, sessionId: terminalMatch[1] };
     }
 
-    const openPasteMatch = pathname.match(/^\/open-kai\/([a-z]{3}[0-9]{3})$/);
+    const openPasteMatch = pathname.match(/^\/open-kai\/(text|image|file)\/([a-z]{3}[0-9]{3})$/);
     if (openPasteMatch) {
-      return { view: 'paste' as const, pasteId: openPasteMatch[1] };
+      return { view: 'paste' as const, pasteId: openPasteMatch[2] };
+    }
+
+    // Legacy support for old format without prefix
+    const legacyOpenPasteMatch = pathname.match(/^\/open-kai\/([a-z]{3}[0-9]{3})$/);
+    if (legacyOpenPasteMatch) {
+      return { view: 'paste' as const, pasteId: legacyOpenPasteMatch[1] };
     }
 
     // Handle short URL redirect preview page /u/[shortId]
@@ -123,7 +138,8 @@ function App() {
     const legacyMatch = pathname.match(/^\/([a-z]{3}[0-9]{3})$/);
     if (legacyMatch) {
       const id = legacyMatch[1];
-      window.history.replaceState({}, '', `/open-kai/${id}`);
+      // Default to text for legacy URLs without type info
+      window.history.replaceState({}, '', `/open-kai/text/${id}`);
       return { view: 'paste' as const, pasteId: id };
     }
 
@@ -133,6 +149,43 @@ function App() {
   const navigate = (path: string) => {
     window.history.pushState({}, '', path);
     setRoute(parseRoute(path));
+  };
+
+  // Navigate with auth check - shows modal for protected features
+  const navigateWithAuth = (path: string, feature: string = 'this feature') => {
+    if (isLoggedIn) {
+      navigate(path);
+      return;
+    }
+
+    // Check if user has previously chosen "Continue as Guest"
+    const savedChoice = localStorage.getItem('authChoice');
+    if (savedChoice === 'guest') {
+      navigate(path);
+      return;
+    }
+
+    // Show modal if no saved choice or user chose login
+    setPendingNavigation(path);
+    setAuthFeature(feature);
+    setAuthModalOpen(true);
+  };
+
+  const handleGuestContinue = () => {
+    // Save user's choice to localStorage
+    localStorage.setItem('authChoice', 'guest');
+    setAuthModalOpen(false);
+    if (pendingNavigation) {
+      navigate(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleLogin = () => {
+    // Clear saved choice when user chooses to login
+    localStorage.removeItem('authChoice');
+    setAuthModalOpen(false);
+    navigate('/login');
   };
 
   useEffect(() => {
@@ -151,7 +204,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <PasteView pasteId={route.pasteId} onNavigate={navigate} />
         </Container>
       </div>
@@ -163,7 +216,6 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
           <ReceivePost onNavigate={navigate} />
         </Container>
       </div>
@@ -175,7 +227,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <Login onNavigate={navigate} />
         </Container>
       </div>
@@ -187,7 +239,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <Register onNavigate={navigate} />
         </Container>
       </div>
@@ -199,7 +251,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <PasteHistory onNavigate={navigate} />
         </Container>
       </div>
@@ -211,7 +263,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <Profile onNavigate={navigate} />
         </Container>
       </div>
@@ -223,9 +275,8 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <HomePage
-            onNavigate={navigate}
             onPasteCreated={(newPasteId) => navigate(`/open-kai/${newPasteId}`)}
           />
         </Container>
@@ -238,8 +289,15 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <OpenPasteHub onNavigate={navigate} />
+          <AuthModal
+            isOpen={authModalOpen}
+            onClose={() => setAuthModalOpen(false)}
+            onGuest={handleGuestContinue}
+            onLogin={handleLogin}
+            feature={authFeature}
+          />
         </Container>
       </div>
     );
@@ -250,7 +308,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
-          <BackButton />
+          <BackButton onNavigate={navigate} />
           <MinusURL onNavigate={navigate} />
         </Container>
       </div>
@@ -284,6 +342,7 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <Container>
           <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
           <CodeHealth onNavigate={navigate} />
         </Container>
       </div>
@@ -298,7 +357,17 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Container>
         <Navbar onNavigate={navigate} />
-        <ToolsLanding onNavigate={navigate} />
+        <ToolsLanding 
+          onNavigate={navigate} 
+          onAuthNavigate={navigateWithAuth}
+        />
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          onGuest={handleGuestContinue}
+          onLogin={handleLogin}
+          feature={authFeature}
+        />
       </Container>
     </div>
   );

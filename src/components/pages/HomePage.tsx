@@ -4,7 +4,6 @@ import { getToken } from '../../lib/auth';
 
 interface HomePageProps {
   onPasteCreated: (pasteId: string) => void;
-  onNavigate: (path: string) => void;
 }
 
 export default function HomePage({ onPasteCreated }: HomePageProps) {
@@ -17,12 +16,8 @@ export default function HomePage({ onPasteCreated }: HomePageProps) {
 
   const handleCreate = async () => {
     if (!content.trim()) {
-      setError('Please enter some content');
       return;
     }
-
-    setLoading(true);
-    setError('');
 
     try {
       const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/pastes`;

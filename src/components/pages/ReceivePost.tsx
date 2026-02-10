@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { AlertCircle, Copy, Download, Loader2 } from 'lucide-react';
+import { Copy, Download, Loader2, FileText, Clock, ArrowLeft, ExternalLink, Calendar, Hourglass } from 'lucide-react';
 
 interface ReceivePostProps {
   onNavigate: (path: string) => void;
@@ -111,15 +111,19 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
             <button
               type="button"
               onClick={() => onNavigate('/open-kai')}
-              className="px-4 py-2 bg-white/15 hover:bg-white/25 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/25 text-white rounded-lg font-medium transition-colors"
             >
+              <ArrowLeft className="w-4 h-4" />
               Back
             </button>
           </div>
 
           <div className="p-6 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Enter id of the text you want retrieved:</label>
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+                <FileText className="w-4 h-4 text-slate-500" />
+                Enter paste ID:
+              </label>
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   value={inputId}
@@ -141,7 +145,7 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
                     </>
                   ) : (
                     <>
-                     <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-arrow-down-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 7l-10 10" /><path d="M16 17l-9 0l0 -9" /></svg>
+                      <Download className="w-5 h-5" />
                       Retrieve
                     </>
                   )}
@@ -150,9 +154,37 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-                <p className="text-sm text-red-800">{error}</p>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-8 text-center">
+                {/* Modern Not Found SVG Illustration */}
+                <div className="mb-6 flex justify-center">
+                  <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Background circle */}
+                    <circle cx="60" cy="60" r="50" fill="#E2E8F0" />
+                    {/* Document base */}
+                    <rect x="35" y="30" width="40" height="50" rx="4" fill="#FFFFFF" stroke="#64748B" strokeWidth="2"/>
+                    {/* Document lines */}
+                    <line x1="42" y1="42" x2="68" y2="42" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"/>
+                    <line x1="42" y1="50" x2="68" y2="50" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"/>
+                    <line x1="42" y1="58" x2="58" y2="58" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"/>
+                    {/* Magnifying glass */}
+                    <circle cx="72" cy="72" r="16" fill="none" stroke="#3B82F6" strokeWidth="3"/>
+                    <line x1="84" y1="84" x2="95" y2="95" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round"/>
+                    {/* Question mark */}
+                    <text x="72" y="78" textAnchor="middle" fill="#3B82F6" fontSize="14" fontWeight="bold">?</text>
+                    {/* Cross mark for not found */}
+                    <circle cx="85" cy="35" r="12" fill="#EF4444"/>
+                    <line x1="80" y1="30" x2="90" y2="40" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <line x1="90" y1="30" x2="80" y2="40" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">Paste Not Found</h3>
+                <p className="text-slate-600 mb-4">{error}</p>
+                <button
+                  onClick={() => {setError(''); setInputId('');}}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Try Again
+                </button>
               </div>
             )}
 
@@ -160,10 +192,17 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
               <div className="mt-2 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
                 <div className="px-5 py-4 bg-white border-b border-slate-200 flex items-center justify-between">
                   <div>
-                    <div className="text-slate-900 font-semibold">Paste: {paste.pasteId}</div>
-                    <div className="text-slate-500 text-sm">Created {formatDate(paste.createdAt)}</div>
+                    <div className="flex items-center gap-2 text-slate-900 font-semibold">
+                      <FileText className="w-4 h-4 text-emerald-600" />
+                      Paste: {paste.pasteId}
+                    </div>
+                    <div className="flex items-center gap-1 text-slate-500 text-sm mt-1">
+                      <Calendar className="w-3 h-3" />
+                      Created {formatDate(paste.createdAt)}
+                    </div>
                     {paste.expiresAt && (
-                      <div className="text-amber-600 text-sm font-medium mt-1">
+                      <div className="flex items-center gap-1 text-amber-600 text-sm font-medium mt-1">
+                        <Hourglass className="w-3 h-3" />
                         {getTimeRemaining(paste.expiresAt)}
                       </div>
                     )}
@@ -173,8 +212,9 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
                     <button
                       type="button"
                       onClick={() => onNavigate(`/open-kai/${paste.pasteId}`)}
-                      className="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg font-medium transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg font-medium transition-colors"
                     >
+                      <ExternalLink className="w-4 h-4" />
                       Open
                     </button>
                     <button
@@ -196,8 +236,14 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
-                    <span>{paste.content.length.toLocaleString()} characters</span>
-                    <span>{Math.ceil(paste.content.length / 1024)} KB</span>
+                    <span className="flex items-center gap-1">
+                      <FileText className="w-3 h-3" />
+                      {paste.content.length.toLocaleString()} characters
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {Math.ceil(paste.content.length / 1024)} KB
+                    </span>
                   </div>
                 </div>
               </div>

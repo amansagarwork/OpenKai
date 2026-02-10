@@ -2,9 +2,10 @@ import { FileText, Link2, Terminal, Code } from 'lucide-react';
 
 interface ToolsLandingProps {
   onNavigate: (path: string) => void;
+  onAuthNavigate?: (path: string, feature: string) => void;
 }
 
-export default function ToolsLanding({ onNavigate }: ToolsLandingProps) {
+export default function ToolsLanding({ onNavigate, onAuthNavigate }: ToolsLandingProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-6xl mx-auto px-6 py-10">
@@ -18,7 +19,7 @@ export default function ToolsLanding({ onNavigate }: ToolsLandingProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <button
             type="button"
-            onClick={() => onNavigate('/open-kai')}
+            onClick={() => onAuthNavigate ? onAuthNavigate('/open-kai', 'OpenPaste') : onNavigate('/open-kai')}
             className="text-left bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-slate-300 transition-all"
           >
             <div className="flex items-center gap-3">
