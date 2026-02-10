@@ -15,6 +15,18 @@ import Profile from './components/pages/Profile';
 import Terminal from './components/pages/Terminal';
 import TerminalSessions from './components/pages/TerminalSessions';
 import CodeHealth from './components/pages/CodeHealth';
+import LoremGenerator from './components/pages/LoremGenerator';
+import CSVToJSON from './components/pages/CSVToJSON';
+import ColorConverter from './components/pages/ColorConverter';
+import HTMLEncoder from './components/pages/HTMLEncoder';
+import RegexTester from './components/pages/RegexTester';
+import HashGenerator from './components/pages/HashGenerator';
+import URLEncoder from './components/pages/URLEncoder';
+import JWTDecoder from './components/pages/JWTDecoder';
+import PasswordGenerator from './components/pages/PasswordGenerator';
+import JSONFormatter from './components/pages/JSONFormatter';
+import Base64Tool from './components/pages/Base64Tool';
+import UUIDGenerator from './components/pages/UUIDGenerator';
 import AuthModal from './components/core/AuthModal';
 import { getToken } from './lib/auth';
 
@@ -58,6 +70,18 @@ function App() {
     | { view: 'terminal'; sessionId?: string }
     | { view: 'terminal_sessions' }
     | { view: 'codehealth' }
+    | { view: 'uuid_generator' }
+    | { view: 'base64_tool' }
+    | { view: 'json_formatter' }
+    | { view: 'password_generator' }
+    | { view: 'jwt_decoder' }
+    | { view: 'url_encoder' }
+    | { view: 'hash_generator' }
+    | { view: 'regex_tester' }
+    | { view: 'html_encoder' }
+    | { view: 'color_converter' }
+    | { view: 'csv_to_json' }
+    | { view: 'lorem_generator' }
     | { view: 'redirect'; shortId: string }
   >({
     view: 'landing',
@@ -109,8 +133,52 @@ function App() {
       return { view: 'terminal_sessions' as const };
     }
 
-    if (pathname === '/code-health' || pathname === '/codehealth') {
-      return { view: 'codehealth' as const };
+    if (pathname === '/uuid-generator' || pathname === '/uuid') {
+      return { view: 'uuid_generator' as const };
+    }
+
+    if (pathname === '/base64' || pathname === '/base64-tool') {
+      return { view: 'base64_tool' as const };
+    }
+
+    if (pathname === '/json' || pathname === '/json-formatter') {
+      return { view: 'json_formatter' as const };
+    }
+
+    if (pathname === '/password' || pathname === '/password-generator') {
+      return { view: 'password_generator' as const };
+    }
+
+    if (pathname === '/jwt' || pathname === '/jwt-decoder') {
+      return { view: 'jwt_decoder' as const };
+    }
+
+    if (pathname === '/url-encoder' || pathname === '/url') {
+      return { view: 'url_encoder' as const };
+    }
+
+    if (pathname === '/hash' || pathname === '/hash-generator') {
+      return { view: 'hash_generator' as const };
+    }
+
+    if (pathname === '/regex' || pathname === '/regex-tester') {
+      return { view: 'regex_tester' as const };
+    }
+
+    if (pathname === '/html' || pathname === '/html-encoder') {
+      return { view: 'html_encoder' as const };
+    }
+
+    if (pathname === '/color' || pathname === '/color-converter') {
+      return { view: 'color_converter' as const };
+    }
+
+    if (pathname === '/csv' || pathname === '/csv-to-json') {
+      return { view: 'csv_to_json' as const };
+    }
+
+    if (pathname === '/lorem' || pathname === '/lorem-ipsum') {
+      return { view: 'lorem_generator' as const };
     }
 
     const terminalMatch = pathname.match(/^\/terminal\/([a-zA-Z0-9_-]+)$/);
@@ -344,6 +412,150 @@ function App() {
           <Navbar onNavigate={navigate} />
           <BackButton onNavigate={navigate} />
           <CodeHealth onNavigate={navigate} />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'uuid_generator') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <UUIDGenerator />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'base64_tool') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <Base64Tool />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'json_formatter') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <JSONFormatter />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'password_generator') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <PasswordGenerator />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'jwt_decoder') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <JWTDecoder />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'url_encoder') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <URLEncoder />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'hash_generator') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <HashGenerator />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'regex_tester') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <RegexTester />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'html_encoder') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <HTMLEncoder />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'color_converter') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <ColorConverter />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'csv_to_json') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <CSVToJSON />
+        </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'lorem_generator') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Container>
+          <Navbar onNavigate={navigate} />
+          <BackButton onNavigate={navigate} />
+          <LoremGenerator />
         </Container>
       </div>
     );
