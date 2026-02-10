@@ -11,6 +11,7 @@
     "server:start": "node dist/server/index.js",
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "build": "npm run server:build && npm run client:build",
+    "vercel-build": "vite build",
     "start": "node dist/server/index.js",
     "db:setup": "node server/db/setup.js",
     "lint": "eslint .",
