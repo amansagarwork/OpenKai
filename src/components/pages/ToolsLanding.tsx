@@ -1,4 +1,4 @@
-import { FileText, Link2, Terminal, Code, Sparkles, Shuffle, FileJson, Shield, Unlock, Globe, Hash, Bug, Code2, Palette, FileSpreadsheet, Type } from 'lucide-react';
+import { FileText, Link2, Terminal, Code, Sparkles, Shuffle, FileJson, Shield, Unlock, Globe, Hash, Bug, Code2, Palette, FileSpreadsheet, Type, Target } from 'lucide-react';
 
 interface ToolsLandingProps {
   onNavigate: (path: string) => void;
@@ -327,6 +327,26 @@ export default function ToolsLanding({ onNavigate, onAuthNavigate }: ToolsLandin
             </div>
             <div className="mt-5 text-sm text-slate-600">
               Generate placeholder text for designs.
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('/product-management')}
+            className="text-left bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-slate-300 transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <Target className="w-7 h-7 text-blue-600" />
+              </div>
+              <div>
+                <div className="text-xl font-semibold text-slate-900">Product Management</div>
+                <div className="text-sm text-slate-600">Jira-style project tracker</div>
+              </div>
+            </div>
+
+            <div className="mt-5 text-sm text-slate-600">
+              Manage sprints, track issues, and integrate with GitHub and Slack.
             </div>
           </button>
 

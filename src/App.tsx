@@ -27,6 +27,7 @@ import PasswordGenerator from './components/pages/PasswordGenerator';
 import JSONFormatter from './components/pages/JSONFormatter';
 import Base64Tool from './components/pages/Base64Tool';
 import UUIDGenerator from './components/pages/UUIDGenerator';
+import ProductManagement from './components/ProductManagement';
 import AuthModal from './components/core/AuthModal';
 import { getToken } from './lib/auth';
 
@@ -82,6 +83,7 @@ function App() {
     | { view: 'color_converter' }
     | { view: 'csv_to_json' }
     | { view: 'lorem_generator' }
+    | { view: 'product_management' }
     | { view: 'redirect'; shortId: string }
   >({
     view: 'landing',
@@ -179,6 +181,10 @@ function App() {
 
     if (pathname === '/lorem' || pathname === '/lorem-ipsum') {
       return { view: 'lorem_generator' as const };
+    }
+
+    if (pathname === '/product-management' || pathname === '/product-management-tool') {
+      return { view: 'product_management' as const };
     }
 
     const terminalMatch = pathname.match(/^\/terminal\/([a-zA-Z0-9_-]+)$/);
@@ -557,6 +563,14 @@ function App() {
           <BackButton onNavigate={navigate} />
           <LoremGenerator />
         </Container>
+      </div>
+    );
+  }
+
+  if (route.view === 'product_management') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <ProductManagement onNavigate={navigate} />
       </div>
     );
   }

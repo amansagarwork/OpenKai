@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { authRouter, pasteRouter, urlRouter, terminalRouter, lintRouter } from './modules';
+import productManagementRoutes from './routes/productManagementRoutes';
 import { query } from './config/db';
 import { cleanupService } from './services/cleanupService';
 import { redirectToOriginalUrl } from './modules/url/controllers';
@@ -36,6 +37,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/urls', urlRouter);
 app.use('/api/terminal', terminalRouter);
 app.use('/api/lint', lintRouter);
+app.use('/api/product', productManagementRoutes);
 
 // URL redirect route (must be before static files)
 app.get('/u/:shortId', redirectToOriginalUrl);
