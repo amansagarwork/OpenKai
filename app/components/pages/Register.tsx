@@ -1,12 +1,12 @@
+'use client';
+
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AlertCircle, Loader2, UserPlus } from 'lucide-react';
 import { setToken } from '../../lib/auth';
 
-interface RegisterProps {
-  onNavigate: (path: string) => void;
-}
-
-export default function Register({ onNavigate }: RegisterProps) {
+export default function Register() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -33,7 +33,7 @@ export default function Register({ onNavigate }: RegisterProps) {
 
     setLoading(true);
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/auth/register`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/register`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -50,7 +50,7 @@ export default function Register({ onNavigate }: RegisterProps) {
       }
 
       setToken(data.token);
-      onNavigate('/');
+      router.push('/');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Registration failed');
     } finally {
@@ -130,7 +130,7 @@ export default function Register({ onNavigate }: RegisterProps) {
               Already have an account?{' '}
               <button
                 type="button"
-                onClick={() => onNavigate('/login')}
+                onClick={() => router.push('/login')}
                 className="text-slate-900 font-semibold hover:underline"
               >
                 Login

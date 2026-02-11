@@ -1,4 +1,7 @@
+'use client';
+
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   DndContext,
   DragOverlay,
@@ -23,10 +26,6 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Target, Calendar, GitBranch, Plus, Search, Clock, AlertCircle, CheckCircle, X, GripVertical } from 'lucide-react';
 import { getToken } from '../lib/auth';
-
-interface ProductManagementProps {
-  onNavigate: (path: string) => void;
-}
 
 interface Issue {
   id: string;
@@ -62,7 +61,7 @@ interface BoardData {
   done: Issue[];
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 // Sortable Issue Card Component
 function SortableIssueCard({ issue }: { issue: Issue }) {
@@ -191,7 +190,8 @@ function IssueCard({ issue }: { issue: Issue }) {
   );
 }
 
-export default function ProductManagement({ onNavigate }: ProductManagementProps) {
+export default function ProductManagement() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'board' | 'backlog' | 'sprints'>('board');
   const [boardData, setBoardData] = useState<BoardData>({
     backlog: [],
@@ -248,7 +248,7 @@ export default function ProductManagement({ onNavigate }: ProductManagementProps
     });
     
     if (response.status === 401) {
-      onNavigate('/login');
+      router.push('/login');
       return null;
     }
     
@@ -481,7 +481,7 @@ export default function ProductManagement({ onNavigate }: ProductManagementProps
               </div>
             </div>
             <button
-              onClick={() => onNavigate('/')}
+              onClick={() => router.push('/')}
               className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
             >
               Back to Tools
