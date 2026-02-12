@@ -1,9 +1,12 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Code, CheckCircle, AlertTriangle, AlertCircle, Info, FileCode, Zap } from 'lucide-react';
 import { getToken } from '../../lib/auth';
 
 interface CodeHealthProps {
-  onNavigate: (path: string) => void;
+  // onNavigate: (path: string) => void;
 }
 
 interface LintIssue {
@@ -37,7 +40,8 @@ interface LintResult {
   };
 }
 
-export default function CodeHealth({ onNavigate }: CodeHealthProps) {
+export default function CodeHealth() {
+  const router = useRouter();
   const [code, setCode] = useState('');
   const [filename, setFilename] = useState('');
   const [result, setResult] = useState<LintResult | null>(null);
@@ -209,7 +213,7 @@ export default function CodeHealth({ onNavigate }: CodeHealthProps) {
 
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/lint/check`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/lint/check`;
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -223,7 +227,7 @@ export default function CodeHealth({ onNavigate }: CodeHealthProps) {
       const data = await response.json();
 
       if (response.status === 401) {
-        onNavigate('/login');
+        router.push('/login');
         return;
       }
 
@@ -319,7 +323,7 @@ fetch("https://bit.ly/abc123");  // Line 27 - URL shortener should info`;
               </div>
             </div>
             <button
-              onClick={() => onNavigate('/')}
+              onClick={() => router.push('/')}
               className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
             >
               Back to Tools

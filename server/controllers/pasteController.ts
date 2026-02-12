@@ -119,7 +119,7 @@ export const createPaste = async (req: Request, res: Response) => {
 
       res.status(201).json({
         pasteId,
-        url: `${process.env.BASE_URL || 'http://localhost:5173'}/open-kai/${pasteId}`,
+        url: `${process.env.FRONTEND_BASE_URL || 'http://localhost:3000'}/open-kai/${pasteId}`,
         deleteToken
       });
     } finally {

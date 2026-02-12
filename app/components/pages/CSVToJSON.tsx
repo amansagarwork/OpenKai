@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, FileSpreadsheet, ArrowRightLeft } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function CSVToJSON() {
   const [csvInput, setCsvInput] = useState('');
@@ -63,8 +66,8 @@ export default function CSVToJSON() {
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(jsonOutput);
+  const handleCopy = async () => {
+    await copyToClipboard(jsonOutput);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -139,7 +142,7 @@ Bob Johnson,35,bob@example.com`;
               </label>
               {jsonOutput && (
                 <button
-                  onClick={copyToClipboard}
+                  onClick={handleCopy}
                   className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

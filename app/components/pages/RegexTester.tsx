@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, Bug, Play } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState('');
@@ -33,8 +36,8 @@ export default function RegexTester() {
     }
   };
 
-  const copyPattern = () => {
-    navigator.clipboard.writeText(`/${pattern}/${flags}`);
+  const copyPattern = async () => {
+    await copyToClipboard(`/${pattern}/${flags}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

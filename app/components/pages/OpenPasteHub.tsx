@@ -1,13 +1,12 @@
+'use client';
+
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Send, Download, FileText, Image as ImageIcon, Upload, Clock, X, Copy, Check } from 'lucide-react';
 
-interface OpenPasteHubProps {
-  onNavigate: (path: string) => void;
-}
-
-type ContentType = 'text' | 'image' | 'file';
-
-export default function OpenPasteHub({ onNavigate }: OpenPasteHubProps) {
+export default function OpenPasteHub() {
+  const router = useRouter();
+  type ContentType = 'text' | 'image' | 'file';
   const [activeTab, setActiveTab] = useState<ContentType>('text');
   const [textContent, setTextContent] = useState('');
   const [expiresIn, setExpiresIn] = useState('5m');
@@ -70,7 +69,7 @@ export default function OpenPasteHub({ onNavigate }: OpenPasteHubProps) {
       // Add expiration
       formData.append('expiresIn', expiresIn);
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/pastes`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/pastes`, {
         method: 'POST',
         body: formData,
       });
@@ -93,9 +92,27 @@ export default function OpenPasteHub({ onNavigate }: OpenPasteHubProps) {
   };
 
   const copyToClipboard = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      alert('Failed to copy to clipboard. Please copy manually.');
+    }
   };
 
   const reset = () => {
@@ -429,7 +446,7 @@ export default function OpenPasteHub({ onNavigate }: OpenPasteHubProps) {
             <div className="border-t border-slate-200 p-4 bg-slate-50">
               <div className="flex items-center justify-center gap-4">
                 <button
-                  onClick={() => onNavigate('/receive-post')}
+                  onClick={() => router.push('/receive-post')}
                   className="flex items-center gap-2 px-6 py-3 border-2 border-dashed border-blue-400 text-blue-600 hover:text-blue-800 hover:bg-blue-50 hover:border-blue-600 rounded-xl transition-all font-medium"
                 >
                   <Download className="w-5 h-5 animate-bounce" />

@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, RefreshCw, Shield } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function PasswordGenerator() {
   const [password, setPassword] = useState('');
@@ -59,8 +62,8 @@ export default function PasswordGenerator() {
     else setStrength('Strong');
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(password);
+  const handleCopy = async () => {
+    await copyToClipboard(password);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -148,7 +151,7 @@ export default function PasswordGenerator() {
                   className="w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-300 rounded-lg font-mono text-sm break-all"
                 />
                 <button
-                  onClick={copyToClipboard}
+                  onClick={handleCopy}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

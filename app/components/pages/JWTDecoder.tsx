@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, Unlock, AlertCircle } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function JWTDecoder() {
   const [token, setToken] = useState('');
@@ -40,8 +43,8 @@ export default function JWTDecoder() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string) => {
+    await copyToClipboard(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -98,7 +101,7 @@ export default function JWTDecoder() {
                 <h2 className="text-lg font-semibold text-slate-800">Header (Algorithm)</h2>
                 {header && (
                   <button
-                    onClick={() => copyToClipboard(header)}
+                    onClick={() => handleCopy(header)}
                     className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

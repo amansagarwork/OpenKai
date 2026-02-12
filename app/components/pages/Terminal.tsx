@@ -1,12 +1,10 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Terminal as TerminalIcon, Send, HelpCircle, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { getToken } from '../../lib/auth';
 import { motion } from 'framer-motion';
-
-interface TerminalProps {
-  onNavigate: (path: string) => void;
-  sessionId?: string;
-}
 
 interface CommandHistory {
   id: string;
@@ -30,7 +28,8 @@ function BackButton() {
   );
 }
 
-export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
+export default function Terminal({ sessionId }: { sessionId?: string }) {
+  const router = useRouter();
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<CommandHistory[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,19 +60,19 @@ export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
   const loadSession = async () => {
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/sessions/${sessionId}`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/sessions/${sessionId}`;
       
       const response = await fetch(apiUrl, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (response.status === 401) {
-        onNavigate('/login');
+        router.push('/login');
         return;
       }
 
       if (response.status === 404) {
-        onNavigate('/terminal');
+        router.push('/terminal');
         return;
       }
 
@@ -102,7 +101,7 @@ export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
 
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/sessions/${sessionId}/reopen`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/sessions/${sessionId}/reopen`;
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -110,7 +109,7 @@ export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
       });
 
       if (response.status === 401) {
-        onNavigate('/login');
+        router.push('/login');
         return;
       }
 
@@ -128,7 +127,7 @@ export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
     
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/sessions/${sessionId}/close`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/sessions/${sessionId}/close`;
       
       await fetch(apiUrl, {
         method: 'POST',
@@ -159,7 +158,7 @@ export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
 
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/execute`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/execute`;
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -173,7 +172,7 @@ export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
       const data = await response.json();
 
       if (response.status === 401) {
-        onNavigate('/login');
+        router.push('/login');
         return;
       }
 
@@ -265,7 +264,7 @@ export default function Terminal({ onNavigate, sessionId }: TerminalProps) {
                 </button>
               )}
               <button
-                onClick={() => onNavigate('/terminal')}
+                onClick={() => router.push('/terminal')}
                 className="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors"
               >
                 Back to Sessions

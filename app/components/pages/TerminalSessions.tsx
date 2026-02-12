@@ -1,12 +1,11 @@
+'use client';
+
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Terminal, Plus, History, Clock, X, Play, FileText, Trash2, ArrowLeft } from 'lucide-react';
 import { getToken } from '../../lib/auth';
 import { motion } from 'framer-motion';
 import ConfirmModal from '../core/ConfirmModal';
-
-interface TerminalSessionsProps {
-  onNavigate: (path: string) => void;
-}
 
 interface TerminalSession {
   id: number;
@@ -34,7 +33,8 @@ function BackButton() {
   );
 }
 
-export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) {
+export default function TerminalSessions() {
+  const router = useRouter();
   const [sessions, setSessions] = useState<TerminalSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -52,14 +52,14 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
   const fetchSessions = async () => {
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/sessions`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/sessions`;
       
       const response = await fetch(apiUrl, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (response.status === 401) {
-        onNavigate('/login');
+        router.push('/login');
         return;
       }
 
@@ -87,7 +87,7 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
     setDeletingSession(true);
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/sessions/${confirmDeleteSessionId}`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/sessions/${confirmDeleteSessionId}`;
 
       const response = await fetch(apiUrl, {
         method: 'DELETE',
@@ -95,7 +95,7 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
       });
 
       if (response.status === 401) {
-        onNavigate('/login');
+        router.push('/login');
         return;
       }
 
@@ -115,7 +115,7 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
     
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/sessions`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/sessions`;
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -129,7 +129,7 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
       const data = await response.json();
       
       if (response.ok) {
-        onNavigate(`/terminal/${data.session.session_id}`);
+        router.push(`/terminal/${data.session.session_id}`);
       } else {
         setError(data.error || 'Failed to create session');
       }
@@ -143,7 +143,7 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
   const closeSession = async (sessionId: string) => {
     try {
       const token = getToken();
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/terminal/sessions/${sessionId}/close`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/terminal/sessions/${sessionId}/close`;
       
       await fetch(apiUrl, {
         method: 'POST',
@@ -311,7 +311,7 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
                     {session.status === 'active' ? (
                       <>
                         <button
-                          onClick={() => onNavigate(`/terminal/${session.session_id}`)}
+                          onClick={() => router.push(`/terminal/${session.session_id}`)}
                           className="flex items-center gap-1 px-3 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors"
                         >
                           <Play className="w-4 h-4" />
@@ -335,7 +335,7 @@ export default function TerminalSessions({ onNavigate }: TerminalSessionsProps) 
                     ) : (
                       <>
                         <button
-                          onClick={() => onNavigate(`/terminal/${session.session_id}`)}
+                          onClick={() => router.push(`/terminal/${session.session_id}`)}
                           className="flex items-center gap-1 px-3 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
                         >
                           <FileText className="w-4 h-4" />

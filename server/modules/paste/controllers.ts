@@ -189,7 +189,7 @@ export const createPaste = async (req: Request, res: Response) => {
     res.status(201).json({
       pasteId,
       slug,
-      url: `${process.env.BASE_URL || 'http://localhost:5173'}/open-kai/${slug || pasteId}`,
+      url: `${process.env.FRONTEND_BASE_URL || 'http://localhost:3000'}/open-kai/${slug || pasteId}`,
       deleteToken,
       contentType: contentType.startsWith('image/') ? 'image' : contentType.startsWith('text/') ? 'text' : 'file'
     });

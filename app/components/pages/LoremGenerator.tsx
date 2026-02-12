@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, RefreshCw, Type } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function LoremGenerator() {
   const [paragraphs, setParagraphs] = useState(3);
@@ -56,8 +59,8 @@ export default function LoremGenerator() {
     setOutput(mode === 'paragraphs' ? result.join('\n\n') : result.join(' '));
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(output);
+  const handleCopy = async () => {
+    await copyToClipboard(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -132,7 +135,7 @@ export default function LoremGenerator() {
                 Generated Text
               </h2>
               <button
-                onClick={copyToClipboard}
+                onClick={handleCopy}
                 className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

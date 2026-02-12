@@ -1,10 +1,10 @@
+'use client';
+
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AlertCircle, Copy, FileText, Loader2, Link2, Trash2 } from 'lucide-react';
 import { getToken } from '../../lib/auth';
-
-interface PasteHistoryProps {
-  onNavigate: (path: string) => void;
-}
+import { copyToClipboard } from '../../lib/clipboard';
 
 type HistoryItem = {
   id: string;
@@ -16,7 +16,8 @@ type HistoryItem = {
   url: string;
 };
 
-export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
+export default function PasteHistory() {
+  const router = useRouter();
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,7 +29,7 @@ export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
   useEffect(() => {
     const run = async () => {
       if (!token) {
-        onNavigate('/login');
+        router.push('/login');
         return;
       }
 
@@ -36,7 +37,7 @@ export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
       setError('');
 
       try {
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/pastes/history/all`;
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/pastes/history/all`;
         const response = await fetch(apiUrl, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -55,10 +56,10 @@ export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
     };
 
     run();
-  }, [onNavigate, token]);
+  }, [router, token]);
 
   const copy = async (text: string, key: string) => {
-    await navigator.clipboard.writeText(text);
+    await copyToClipboard(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(''), 1200);
   };
@@ -76,8 +77,8 @@ export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
     
     try {
       const endpoint = item.type === 'paste' 
-        ? `${import.meta.env.VITE_API_BASE_URL}/pastes/${item.id}`
-        : `${import.meta.env.VITE_API_BASE_URL}/urls/${item.id}`;
+        ? `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/pastes/${item.id}`
+        : `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/urls/${item.id}`;
       
       const response = await fetch(endpoint, {
         method: 'DELETE',
@@ -178,7 +179,7 @@ export default function PasteHistory({ onNavigate }: PasteHistoryProps) {
                     <div className="flex flex-wrap items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => onNavigate(it.url)}
+                        onClick={() => router.push(it.url)}
                         className="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg font-medium transition-colors"
                       >
                         Open

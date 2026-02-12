@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef } from 'react';
-import { FileText, Clock, Loader2, X, Check, Download, Image as ImageIcon, File, Share2, LinkIcon, Copy } from 'lucide-react';
+'use client';
 
-interface PasteViewProps {
-  pasteId: string;
-  onNavigate: (path: string) => void;
-}
+import { useEffect, useState, useRef } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { FileText, Clock, Loader2, X, Check, Download, Image as ImageIcon, File, Share2, LinkIcon, Copy } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 interface Paste {
   pasteId: string;
@@ -21,7 +20,10 @@ interface Paste {
   expiresAt: string | null;
 }
 
-export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
+export default function PasteView() {
+  const router = useRouter();
+  const params = useParams();
+  const pasteId = params?.id as string || params?.pasteId as string;
   const [paste, setPaste] = useState<Paste | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -38,7 +40,7 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
     setError('');
 
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/pastes/${pasteId}`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/pastes/${pasteId}`;
 
       const response = await fetch(apiUrl);
 
@@ -141,14 +143,14 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
               <div className="w-full max-w-xs mx-auto">
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
                   <button
-                    onClick={() => onNavigate('/open-kai')}
+                    onClick={() => router.push('/open-kai')}
                     className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     <FileText className="w-4 h-4 flex-shrink-0" />
                     <span>Create New Paste</span>
                   </button>
                   <button
-                    onClick={() => onNavigate('/')}
+                    onClick={() => router.push('/')}
                     className="flex-1 px-4 py-2.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 rounded-lg font-medium transition-colors text-sm sm:text-base"
                   >
                     Back to Home
@@ -176,8 +178,8 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
                   <div className="flex items-center gap-2">
                     <h1 className="text-xl font-bold text-white">{paste.fileName || 'Paste'}</h1>
                     <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(paste.pasteId);
+                      onClick={async () => {
+                        await copyToClipboard(paste.pasteId);
                         setCopied(true);
                         setTimeout(() => setCopied(false), 2000);
                       }}
@@ -201,7 +203,7 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
                 </div>
               </div>
               <button
-                onClick={() => onNavigate('/open-kai')}
+                onClick={() => router.push('/open-kai')}
                 className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg font-medium transition-colors"
               >
                 New Paste
@@ -322,8 +324,8 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
                         Share URL
                       </p>
                       <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${window.location.origin}/open-kai/${paste.slug || paste.pasteId}`);
+                        onClick={async () => {
+                          await copyToClipboard(`${window.location.origin}/open-kai/${paste.slug || paste.pasteId}`);
                           setCopied(true);
                           setTimeout(() => setCopied(false), 2000);
                         }}
@@ -347,8 +349,8 @@ export default function PasteView({ pasteId, onNavigate }: PasteViewProps) {
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-sm font-medium text-slate-700">Content</label>
                     <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(paste.content);
+                      onClick={async () => {
+                        await copyToClipboard(paste.content);
                         setContentCopied(true);
                         setTimeout(() => setContentCopied(false), 2000);
                       }}

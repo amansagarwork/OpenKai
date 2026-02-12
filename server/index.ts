@@ -23,7 +23,20 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://152.160.0.78:3000', 'http://192.168.11.15:3000'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:3002',
+    'http://152.160.0.78:3000',
+    'http://152.160.0.78:3001',
+    'http://152.160.0.78:3002',
+    'http://192.168.11.15:3000',
+    'http://192.168.11.15:3001',
+    'http://192.168.11.15:3002'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -47,13 +60,16 @@ app.use('/api/product', productManagementRoutes);
 // URL redirect route (must be before static files)
 app.get('/u/:shortId', redirectToOriginalUrl);
 
-// Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, '../dist')));
-
-// Catch-all route to serve index.html for client-side routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
-});
+// Static file serving - only for production builds
+// In development, Next.js dev server handles frontend
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../dist')));
+  
+  // Catch-all route to serve index.html for client-side routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+import AnimatedMain from "./components/layout/AnimatedMain";
 
 export const metadata: Metadata = {
   title: "OpenKai - Developer Tools",
@@ -14,9 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased bg-white min-h-screen flex flex-col">
         <Navbar />
-        {children}
+        <AnimatedMain>
+          {children}
+        </AnimatedMain>
+        <Footer />
       </body>
     </html>
   );

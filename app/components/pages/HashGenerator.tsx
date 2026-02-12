@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, Hash, RefreshCw } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function HashGenerator() {
   const [input, setInput] = useState('');
@@ -25,8 +28,8 @@ export default function HashGenerator() {
     setLoading(false);
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(hash);
+  const handleCopy = async () => {
+    await copyToClipboard(hash);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -106,7 +109,7 @@ export default function HashGenerator() {
                   {algorithm} Hash
                 </label>
                 <button
-                  onClick={copyToClipboard}
+                  onClick={handleCopy}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

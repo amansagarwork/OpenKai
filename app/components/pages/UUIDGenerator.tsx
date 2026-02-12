@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, Sparkles } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function UUIDGenerator() {
   const [uuids, setUuids] = useState<string[]>([]);
@@ -21,14 +24,14 @@ export default function UUIDGenerator() {
     setUuids(newUuids);
   };
 
-  const copyToClipboard = (uuid: string) => {
-    navigator.clipboard.writeText(uuid);
+  const handleCopy = async (uuid: string) => {
+    await copyToClipboard(uuid);
     setCopied(uuid);
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const copyAll = () => {
-    navigator.clipboard.writeText(uuids.join('\n'));
+  const copyAll = async () => {
+    await copyToClipboard(uuids.join('\n'));
     setCopied('all');
     setTimeout(() => setCopied(null), 2000);
   };

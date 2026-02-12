@@ -1,10 +1,9 @@
+'use client';
+
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Link2, Loader2, Copy, Check, ExternalLink } from 'lucide-react';
 import { getToken } from '../../lib/auth';
-
-interface MinusURLProps {
-  onNavigate: (path: string) => void;
-}
 
 interface ShortenedURL {
   shortId: string;
@@ -77,7 +76,8 @@ function validateUrl(input: string): { valid: boolean; normalized: string; error
   }
 }
 
-export default function MinusURL({ }: MinusURLProps) {
+export default function MinusURL() {
+  const router = useRouter();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -129,9 +129,27 @@ export default function MinusURL({ }: MinusURLProps) {
   };
 
   const copyToClipboard = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      alert('Failed to copy to clipboard. Please copy manually.');
+    }
   };
 
   if (shortened) {

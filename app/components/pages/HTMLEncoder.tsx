@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, Code2, ArrowRightLeft } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function HTMLEncoder() {
   const [input, setInput] = useState('');
@@ -34,8 +37,8 @@ export default function HTMLEncoder() {
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(output);
+  const handleCopy = async () => {
+    await copyToClipboard(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -113,7 +116,7 @@ export default function HTMLEncoder() {
               <label className="block text-sm font-medium text-slate-700">Result</label>
               {output && (
                 <button
-                  onClick={copyToClipboard}
+                  onClick={handleCopy}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

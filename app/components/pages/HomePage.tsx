@@ -1,12 +1,13 @@
+'use client';
+
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FileText, Clock, Link2, Loader2 } from 'lucide-react';
 import { getToken } from '../../lib/auth';
+import { copyToClipboard } from '../../lib/clipboard';
 
-interface HomePageProps {
-  onPasteCreated: (pasteId: string) => void;
-}
-
-export default function HomePage({ onPasteCreated }: HomePageProps) {
+export default function HomePage() {
+  const router = useRouter();
   const [content, setContent] = useState('');
   const [expiresIn, setExpiresIn] = useState('5m');
   const [loading, setLoading] = useState(false);
@@ -20,8 +21,11 @@ export default function HomePage({ onPasteCreated }: HomePageProps) {
     }
 
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/pastes`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/pastes`;
       const token = getToken();
+      
+      console.log('API URL:', apiUrl);
+      console.log('API_BASE_URL env:', process.env.NEXT_PUBLIC_API_BASE_URL);
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -42,7 +46,7 @@ export default function HomePage({ onPasteCreated }: HomePageProps) {
       const data = await response.json();
       setCreatedUrl(`${window.location.origin}/open-kai/${data.pasteId}`);
       setDeleteToken(data.deleteToken);
-      onPasteCreated(data.pasteId);
+      router.push(`/open-kai/${data.pasteId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create paste');
     } finally {
@@ -50,8 +54,8 @@ export default function HomePage({ onPasteCreated }: HomePageProps) {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string) => {
+    await copyToClipboard(text);
   };
 
   if (createdUrl) {
@@ -79,7 +83,7 @@ export default function HomePage({ onPasteCreated }: HomePageProps) {
                     className="flex-1 px-4 py-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 font-mono text-sm"
                   />
                   <button
-                    onClick={() => copyToClipboard(createdUrl)}
+                    onClick={() => handleCopy(createdUrl)}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
                   >
                     <Link2 className="w-4 h-4" />
@@ -101,7 +105,7 @@ export default function HomePage({ onPasteCreated }: HomePageProps) {
                       className="flex-1 px-3 py-2 bg-white border border-amber-300 rounded text-amber-900 font-mono text-xs"
                     />
                     <button
-                      onClick={() => copyToClipboard(deleteToken)}
+                      onClick={() => handleCopy(deleteToken)}
                       className="px-4 py-2 bg-amber-600 text-white rounded font-medium hover:bg-amber-700 transition-colors text-sm"
                     >
                       Copy

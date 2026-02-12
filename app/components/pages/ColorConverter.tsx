@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { Copy, Check, Palette } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 export default function ColorConverter() {
   const [hex, setHex] = useState('#3B82F6');
@@ -59,8 +62,8 @@ export default function ColorConverter() {
     setHsl(rgbToHsl(newRgb.r, newRgb.g, newRgb.b));
   };
 
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string, label: string) => {
+    await copyToClipboard(text);
     setCopied(label);
     setTimeout(() => setCopied(''), 2000);
   };
@@ -95,7 +98,7 @@ export default function ColorConverter() {
                   className="flex-1 px-4 py-2 border border-slate-300 rounded-lg font-mono uppercase"
                 />
                 <button
-                  onClick={() => copyToClipboard(hex, 'hex')}
+                  onClick={() => handleCopy(hex, 'hex')}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                 >
                   {copied === 'hex' ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -134,7 +137,7 @@ export default function ColorConverter() {
                   max="255"
                 />
                 <button
-                  onClick={() => copyToClipboard(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, 'rgb')}
+                  onClick={() => handleCopy(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, 'rgb')}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                 >
                   {copied === 'rgb' ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -147,7 +150,7 @@ export default function ColorConverter() {
               <div className="flex items-center gap-2">
                 <span className="text-sm text-slate-500">hsl({hsl.h}, {hsl.s}%, {hsl.l}%)</span>
                 <button
-                  onClick={() => copyToClipboard(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`, 'hsl')}
+                  onClick={() => handleCopy(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`, 'hsl')}
                   className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors text-sm"
                 >
                   {copied === 'hsl' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

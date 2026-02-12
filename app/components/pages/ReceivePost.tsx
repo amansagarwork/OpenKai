@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
-import { Copy, Download, Loader2, FileText, Clock, ArrowLeft, ExternalLink, Calendar, Hourglass } from 'lucide-react';
+'use client';
 
-interface ReceivePostProps {
-  onNavigate: (path: string) => void;
-}
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Copy, Download, Loader2, FileText, Clock, ArrowLeft, ExternalLink, Calendar, Hourglass } from 'lucide-react';
+import { copyToClipboard } from '../../lib/clipboard';
 
 interface Paste {
   pasteId: string;
@@ -12,7 +12,8 @@ interface Paste {
   expiresAt: string | null;
 }
 
-export default function ReceivePost({ onNavigate }: ReceivePostProps) {
+export default function ReceivePost() {
+  const router = useRouter();
   const [inputId, setInputId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,8 +23,8 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
   const normalizedId = useMemo(() => inputId.trim().toLowerCase(), [inputId]);
   const isValidId = useMemo(() => /^[a-z]{3}[0-9]{3}$/.test(normalizedId), [normalizedId]);
 
-  const copyToClipboard = async (text: string) => {
-    await navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string) => {
+    await copyToClipboard(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -77,7 +78,7 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
 
     setLoading(true);
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/pastes/${normalizedId}`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/pastes/${normalizedId}`;
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
@@ -110,7 +111,7 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
 
             <button
               type="button"
-              onClick={() => onNavigate('/open-kai')}
+              onClick={() => router.push('/open-kai')}
               className="flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/25 text-white rounded-lg font-medium transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -211,7 +212,7 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => onNavigate(`/open-kai/${paste.pasteId}`)}
+                      onClick={() => router.push(`/open-kai/${paste.pasteId}`)}
                       className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg font-medium transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" />
@@ -219,7 +220,7 @@ export default function ReceivePost({ onNavigate }: ReceivePostProps) {
                     </button>
                     <button
                       type="button"
-                      onClick={() => copyToClipboard(paste.content)}
+                      onClick={() => handleCopy(paste.content)}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                         copied ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                       }`}

@@ -1,12 +1,16 @@
+'use client';
+
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, Mail, Calendar, Edit2, Save, X } from 'lucide-react';
 import { getToken, getUsernameFromToken, getEmailFromToken } from '../../lib/auth';
 
 interface ProfileProps {
-  onNavigate: (path: string) => void;
+  // onNavigate: (path: string) => void;
 }
 
-export default function Profile({ onNavigate }: ProfileProps) {
+export default function Profile() {
+  const router = useRouter();
   const token = getToken();
   const username = getUsernameFromToken(token);
   const email = getEmailFromToken(token);
@@ -34,7 +38,7 @@ export default function Profile({ onNavigate }: ProfileProps) {
     // Fetch user stats from API
     const fetchStats = async () => {
       try {
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/auth/me`;
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/me`;
         const response = await fetch(apiUrl, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -70,7 +74,7 @@ export default function Profile({ onNavigate }: ProfileProps) {
     setMessage('');
 
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/auth/update-profile`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/update-profile`;
       const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
@@ -198,20 +202,20 @@ export default function Profile({ onNavigate }: ProfileProps) {
             <h3 className="font-semibold text-slate-900 mb-4">Quick Actions</h3>
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => onNavigate('/open-kai/history')}
+                onClick={() => router.push('/open-kai/history')}
                 className="px-6 py-3 bg-slate-100 text-slate-800 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center gap-2"
               >
                 <User className="w-4 h-4" />
                 View History
               </button>
               <button
-                onClick={() => onNavigate('/open-kai')}
+                onClick={() => router.push('/open-kai')}
                 className="px-6 py-3 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-colors"
               >
                 Create Paste
               </button>
               <button
-                onClick={() => onNavigate('/minusurl')}
+                onClick={() => router.push('/minusurl')}
                 className="px-6 py-3 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-colors"
               >
                 Shorten URL

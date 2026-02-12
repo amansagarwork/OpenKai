@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { ExternalLink, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
 
@@ -22,7 +24,7 @@ export default function RedirectPage({ shortId }: RedirectPageProps) {
   useEffect(() => {
     const fetchUrlInfo = async () => {
       try {
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/urls/${shortId}/info`;
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/urls/${shortId}/info`;
         const response = await fetch(apiUrl);
         const data = await response.json();
 
