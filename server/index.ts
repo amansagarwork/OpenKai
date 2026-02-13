@@ -1,14 +1,16 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+
+// Load env vars FIRST before any other imports
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
+import express from 'express';
+import cors from 'cors';
 import { authRouter, pasteRouter, urlRouter, terminalRouter, lintRouter } from './modules';
 import productManagementRoutes from './routes/productManagementRoutes';
 import { query } from './config/db';
 import { cleanupService } from './services/cleanupService';
 import { redirectToOriginalUrl } from './modules/url/controllers';
-
-dotenv.config();
 
 // Ensure logs directory exists
 import fs from 'fs';
@@ -22,8 +24,9 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors({
-  origin: [
+const corsOrigins = process.env.NODE_ENV === 'development' 
+  ? true // Allow all origins in development
+  : [
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3002',
@@ -33,10 +36,13 @@ app.use(cors({
     'http://152.160.0.78:3000',
     'http://152.160.0.78:3001',
     'http://152.160.0.78:3002',
-    'http://192.168.11.15:3000',
-    'http://192.168.11.15:3001',
-    'http://192.168.11.15:3002'
-  ],
+    `http://${process.env.HOST || '0.0.0.0'}:3000`,
+    `http://${process.env.HOST || '0.0.0.0'}:3001`,
+    `http://${process.env.HOST || '0.0.0.0'}:3002`,
+  ];
+
+app.use(cors({
+  origin: corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -93,7 +99,7 @@ const startServer = async () => {
     app.listen(Number(PORT), HOST, () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Local: http://localhost:${PORT}`);
-      console.log(`Network: http://192.168.11.15:${PORT}`);
+      console.log(`Network: http://192.168.0.146:${PORT}`);
     });
   } catch (error) {
     console.error('Failed to connect to the database:', error);
