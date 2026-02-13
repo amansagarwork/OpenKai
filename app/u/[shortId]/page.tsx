@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { use } from 'react';
 import RedirectPage from '../../components/pages/RedirectPage';
 
 export const metadata: Metadata = {
@@ -6,10 +7,12 @@ export const metadata: Metadata = {
   description: 'Redirecting to destination',
 };
 
-export default function Redirect({ params }: { params: { shortId: string } }) {
+export default function Redirect({ params }: { params: Promise<{ shortId: string }> }) {
+  const { shortId } = use(params);
+  
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <RedirectPage shortId={params.shortId} />
+    <main className="min-h-screen">
+      <RedirectPage shortId={shortId} />
     </main>
   );
 }

@@ -57,7 +57,7 @@ export default function ToolsLanding() {
   const router = useRouter();
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-6xl mx-auto px-6 pb-14">
         {/* Header */}
         <ScrollReveal className="mb-8">
           <ScrollItem>

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <main className="min-h-screen">
       <div className="max-w-[900px] mx-auto w-full px-4">
         <Login />
       </div>

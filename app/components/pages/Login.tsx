@@ -82,8 +82,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="max-w-lg mx-auto px-6 py-10">
+    <div className="min-h-screen bg-white">
+       <div className="max-w-lg mx-auto px-6 pt-24">
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           <div className="px-6 py-5 bg-gradient-to-r from-slate-900 to-slate-800 flex items-center gap-3">
             <LogIn className="w-6 h-6 text-white" />

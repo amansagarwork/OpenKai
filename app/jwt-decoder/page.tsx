@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function JWTDecoderPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <main className="min-h-screen">
       <JWTDecoder />
     </main>
   );

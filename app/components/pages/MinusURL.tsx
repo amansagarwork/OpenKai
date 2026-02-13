@@ -154,7 +154,7 @@ export default function MinusURL() {
 
   if (shortened) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen">
         <div className="max-w-4xl mx-auto px-6 py-10">
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-5 bg-gradient-to-r from-violet-600 to-violet-700 flex items-center gap-3">
@@ -236,7 +236,7 @@ export default function MinusURL() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       <div className="max-w-4xl mx-auto px-6 py-10">
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           <div className="px-6 py-5 bg-gradient-to-r from-violet-600 to-violet-700 flex items-center gap-3">

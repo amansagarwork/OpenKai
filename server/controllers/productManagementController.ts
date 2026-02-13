@@ -16,6 +16,9 @@ interface Issue {
   parent_id?: number;
   story_points?: number;
   labels: string[];
+  due_date?: Date;
+  estimated_hours?: number;
+  actual_hours?: number;
   created_at: Date;
   updated_at: Date;
   resolved_at?: Date;
@@ -35,6 +38,17 @@ interface Sprint {
 export const getIssues = async (req: Request, res: Response) => {
   try {
     const { status, sprint_id, assignee_id, type, search } = req.query;
+    
+    console.log('[BACKEND] Get issues request:', {
+      query: req.query,
+      status,
+      sprint_id,
+      assignee_id,
+      type,
+      search,
+      url: req.url,
+      method: req.method
+    });
     
     let query = `
       SELECT i.*, 
@@ -77,10 +91,24 @@ export const getIssues = async (req: Request, res: Response) => {
 
     query += ' ORDER BY i.created_at DESC';
 
+    console.log('[BACKEND] Final query:', query);
+    console.log('[BACKEND] Query params:', params);
+
     const result = await pool.query(query, params);
+    
+    console.log('[BACKEND] Issues found:', result.rows.length);
+    console.log('[BACKEND] Issues with due dates:', result.rows.filter(i => i.due_date).length);
+    console.log('[BACKEND] Sample issues:', result.rows.slice(0, 3).map(i => ({
+      id: i.id,
+      key: i.key,
+      title: i.title,
+      status: i.status,
+      due_date: i.due_date
+    })));
+    
     res.status(200).json(result.rows);
   } catch (error) {
-    console.error('Get issues error:', error);
+    console.error('[BACKEND] Get issues error:', error);
     res.status(500).json({ error: 'Failed to get issues' });
   }
 };
@@ -145,27 +173,88 @@ export const createIssue = async (req: Request, res: Response) => {
       type = 'task',
       priority = 'medium',
       status = 'backlog',
-      assignee_id,
+      assignee, // This is the assignee name from frontend
       sprint_id,
       parent_id,
       story_points,
-      labels = []
+      labels = [],
+      due_date,
+      estimated_hours,
+      actual_hours
     } = req.body;
+
+    console.log('[BACKEND] Create issue request:', {
+      title,
+      description,
+      type,
+      priority,
+      status,
+      assignee,
+      sprint_id,
+      parent_id,
+      story_points,
+      labels,
+      due_date,
+      estimated_hours,
+      actual_hours
+    });
 
     if (!title) {
       return res.status(400).json({ error: 'Title is required' });
     }
 
-    const result = await pool.query(`
-      INSERT INTO issues (title, description, type, priority, status, assignee_id, reporter_id, sprint_id, parent_id, story_points, labels)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING *
-    `, [title, description, type, priority, status, assignee_id, user?.userId, sprint_id, parent_id, story_points, labels]);
+    // If assignee is provided as a name, convert to assignee_id
+    let assignee_id = null;
+    if (assignee && typeof assignee === 'string') {
+      try {
+        const userResult = await pool.query(
+          'SELECT id FROM users WHERE username = $1 OR email = $1 LIMIT 1',
+          [assignee]
+        );
+        if (userResult.rows.length > 0) {
+          assignee_id = userResult.rows[0].id;
+        }
+      } catch (error) {
+        console.log('[BACKEND] Could not find user for assignee:', assignee);
+      }
+    }
 
+    // Generate issue key
+    const keyResult = await pool.query(
+      'SELECT COUNT(*) as count FROM issues WHERE key LIKE $1',
+      ['PROD-%']
+    );
+    const count = parseInt(keyResult.rows[0].count) + 1;
+    const key = `PROD-${count}`;
+
+    const result = await pool.query(`
+      INSERT INTO issues (key, title, description, type, priority, status, assignee_id, reporter_id, sprint_id, parent_id, story_points, labels, due_date, estimated_hours, actual_hours)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+      RETURNING *
+    `, [
+      key,
+      title, 
+      description, 
+      type, 
+      priority, 
+      status, 
+      assignee_id, 
+      user?.userId, 
+      sprint_id || null, 
+      parent_id || null, 
+      story_points ? parseInt(story_points) : null, 
+      labels, // Pass array directly to PostgreSQL
+      due_date || null,
+      estimated_hours ? parseFloat(estimated_hours) : null,
+      actual_hours ? parseFloat(actual_hours) : null
+    ]);
+
+    console.log('[BACKEND] Issue created successfully:', result.rows[0]);
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Create issue error:', error);
-    res.status(500).json({ error: 'Failed to create issue' });
+    console.error('[BACKEND] Create issue error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    res.status(500).json({ error: 'Failed to create issue', details: errorMessage });
   }
 };
 
@@ -184,23 +273,55 @@ export const updateIssue = async (req: Request, res: Response) => {
 
     const oldIssue = currentIssue.rows[0];
 
+    // Handle assignee name to ID conversion
+    let assignee_id = updates.assignee_id;
+    if (updates.assignee && typeof updates.assignee === 'string') {
+      try {
+        const userResult = await pool.query(
+          'SELECT id FROM users WHERE username = $1 OR email = $1 LIMIT 1',
+          [updates.assignee]
+        );
+        if (userResult.rows.length > 0) {
+          assignee_id = userResult.rows[0].id;
+        }
+      } catch (error) {
+        console.log('[BACKEND] Could not find user for assignee:', updates.assignee);
+      }
+    }
+
     // Build update query
-    const allowedFields = ['title', 'description', 'type', 'priority', 'status', 'assignee_id', 'sprint_id', 'parent_id', 'story_points', 'labels'];
+    const allowedFields = ['title', 'description', 'type', 'priority', 'status', 'assignee_id', 'sprint_id', 'parent_id', 'story_points', 'labels', 'due_date', 'estimated_hours', 'actual_hours'];
     const setClauses: string[] = [];
     const values: any[] = [];
     let paramIndex = 1;
 
     for (const [key, value] of Object.entries(updates)) {
       if (allowedFields.includes(key) && value !== undefined) {
-        setClauses.push(`${key} = $${paramIndex++}`);
-        values.push(value);
+        if (key === 'assignee_id') {
+          setClauses.push(`${key} = $${paramIndex++}`);
+          values.push(assignee_id);
+        } else if (key === 'story_points') {
+          setClauses.push(`${key} = $${paramIndex++}`);
+          values.push(value ? parseInt(String(value), 10) : null);
+        } else if (key === 'estimated_hours' || key === 'actual_hours') {
+          setClauses.push(`${key} = $${paramIndex++}`);
+          values.push(value ? parseFloat(String(value)) : null);
+        } else if (key === 'labels') {
+          setClauses.push(`${key} = $${paramIndex++}`);
+          values.push(JSON.stringify(value));
+        } else {
+          setClauses.push(`${key} = $${paramIndex++}`);
+          values.push(value);
+        }
 
         // Log history for status and assignee changes
         if ((key === 'status' || key === 'assignee_id') && value !== oldIssue[key]) {
+          const oldValue = oldIssue[key] ? String(oldIssue[key]) : '';
+          const newValue = value ? String(value) : '';
           await pool.query(`
             INSERT INTO issue_history (issue_id, user_id, field, old_value, new_value)
             VALUES ($1, $2, $3, $4, $5)
-          `, [id, user?.userId, key, oldIssue[key], value]);
+          `, [id, user?.userId, key, oldValue, newValue]);
         }
       }
     }
@@ -215,8 +336,9 @@ export const updateIssue = async (req: Request, res: Response) => {
     const result = await pool.query(query, values);
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    console.error('Update issue error:', error);
-    res.status(500).json({ error: 'Failed to update issue' });
+    console.error('[BACKEND] Update issue error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    res.status(500).json({ error: 'Failed to update issue', details: errorMessage });
   }
 };
 
@@ -370,6 +492,13 @@ export const getBoard = async (req: Request, res: Response) => {
   try {
     const { sprint_id } = req.query;
     
+    console.log(`[BACKEND] Get board request:`, {
+      sprint_id,
+      query: req.query,
+      url: req.url,
+      method: req.method
+    });
+    
     let query = `
       SELECT i.*, 
         u_assignee.username as assignee_name,
@@ -393,7 +522,21 @@ export const getBoard = async (req: Request, res: Response) => {
 
     query += ' ORDER BY i.updated_at DESC';
 
+    console.log('[BACKEND] Board query:', query);
+    console.log('[BACKEND] Board params:', params);
+
     const result = await pool.query(query, params);
+    
+    console.log(`[BACKEND] Found ${result.rows.length} issues`);
+    console.log('[BACKEND] Issues with due dates:', result.rows.filter(i => i.due_date).length);
+    console.log('[BACKEND] Sample board issues:', result.rows.slice(0, 3).map(i => ({
+      id: i.id,
+      key: i.key,
+      title: i.title,
+      status: i.status,
+      due_date: i.due_date,
+      assignee_name: i.assignee_name
+    })));
     
     // Group by status
     const board = {
@@ -402,10 +545,12 @@ export const getBoard = async (req: Request, res: Response) => {
       'in-progress': result.rows.filter((i: Issue) => i.status === 'in-progress'),
       done: result.rows.filter((i: Issue) => i.status === 'done')
     };
+    
+    console.log(`[BACKEND] Board: backlog=${board.backlog.length}, selected=${board.selected.length}, in-progress=${board['in-progress'].length}, done=${board.done.length}`);
 
     res.status(200).json(board);
   } catch (error) {
-    console.error('Get board error:', error);
+    console.error('[BACKEND] Get board error:', error);
     res.status(500).json({ error: 'Failed to get board' });
   }
 };
@@ -417,6 +562,8 @@ export const moveIssue = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status, sprint_id } = req.body;
 
+    console.log(`[BACKEND] Move request: issue=${id}, status=${status}, sprint_id=${sprint_id}`);
+
     // Get current issue for history
     const currentIssue = await pool.query('SELECT * FROM issues WHERE id = $1', [id]);
     if (currentIssue.rows.length === 0) {
@@ -424,14 +571,20 @@ export const moveIssue = async (req: Request, res: Response) => {
     }
 
     const oldIssue = currentIssue.rows[0];
+    console.log(`[BACKEND] Current issue:`, oldIssue);
 
-    // Update issue
+    // Update issue - only update sprint_id if provided
+    const updateSprintId = sprint_id !== undefined ? sprint_id : oldIssue.sprint_id;
+    console.log(`[BACKEND] Updating to: status=${status}, sprint_id=${updateSprintId}`);
+
     const result = await pool.query(`
       UPDATE issues 
       SET status = $1, sprint_id = $2, updated_at = CURRENT_TIMESTAMP
       WHERE id = $3
       RETURNING *
-    `, [status, sprint_id, id]);
+    `, [status, updateSprintId, id]);
+
+    console.log(`[BACKEND] Update result:`, result.rows[0]);
 
     // Log history if status changed
     if (status && status !== oldIssue.status) {
@@ -443,7 +596,7 @@ export const moveIssue = async (req: Request, res: Response) => {
 
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    console.error('Move issue error:', error);
+    console.error('[BACKEND] Move issue error:', error);
     res.status(500).json({ error: 'Failed to move issue' });
   }
 };
@@ -469,6 +622,88 @@ export const addComment = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Add comment error:', error);
     res.status(500).json({ error: 'Failed to add comment' });
+  }
+};
+
+// Test endpoint to verify database data
+export const testDatabase = async (req: Request, res: Response) => {
+  try {
+    console.log('[BACKEND] Testing database connection...');
+    
+    // Test basic connection
+    const timeResult = await pool.query('SELECT NOW()');
+    console.log('[BACKEND] Database time:', timeResult.rows[0]);
+    
+    // Test issues table
+    const issuesResult = await pool.query('SELECT id, key, title, status, due_date FROM issues ORDER BY id');
+    console.log('[BACKEND] All issues in database:', issuesResult.rows);
+    
+    // Test with specific due date
+    const dueDateResult = await pool.query('SELECT * FROM issues WHERE due_date IS NOT NULL');
+    console.log('[BACKEND] Issues with due dates:', dueDateResult.rows);
+    
+    res.status(200).json({
+      message: 'Database test successful',
+      time: timeResult.rows[0],
+      issues: issuesResult.rows,
+      issues_with_due_dates: dueDateResult.rows
+    });
+  } catch (error) {
+    console.error('[BACKEND] Database test error:', error);
+    res.status(500).json({ error: 'Database test failed', details: error });
+  }
+};
+
+// Get calendar data (issues grouped by date)
+export const getCalendar = async (req: Request, res: Response) => {
+  try {
+    const { month, year } = req.query;
+    
+    console.log('[BACKEND] Get calendar request:', { month, year });
+    
+    // Get all issues with their details
+    const result = await pool.query(`
+      SELECT i.*, 
+        u_assignee.username as assignee_name,
+        u_reporter.username as reporter_name,
+        s.name as sprint_name
+      FROM issues i
+      LEFT JOIN users u_assignee ON i.assignee_id = u_assignee.id
+      LEFT JOIN users u_reporter ON i.reporter_id = u_reporter.id
+      LEFT JOIN sprints s ON i.sprint_id = s.id
+      ORDER BY i.due_date ASC, i.created_at DESC
+    `);
+    
+    console.log('[BACKEND] Total issues found:', result.rows.length);
+    console.log('[BACKEND] Issues with due dates:', result.rows.filter(i => i.due_date).length);
+    
+    // Group issues by date
+    const calendar: Record<string, any[]> = {};
+    const noDueDate: any[] = [];
+    
+    result.rows.forEach((issue: Issue) => {
+      if (issue.due_date) {
+        const dateStr = issue.due_date.toISOString().split('T')[0];
+        if (!calendar[dateStr]) {
+          calendar[dateStr] = [];
+        }
+        calendar[dateStr].push(issue);
+      } else {
+        noDueDate.push(issue);
+      }
+    });
+    
+    console.log('[BACKEND] Calendar dates with issues:', Object.keys(calendar).length);
+    console.log('[BACKEND] Issues without due date:', noDueDate.length);
+    
+    res.status(200).json({
+      calendar,
+      noDueDate,
+      totalIssues: result.rows.length
+    });
+  } catch (error) {
+    console.error('[BACKEND] Get calendar error:', error);
+    res.status(500).json({ error: 'Failed to get calendar data' });
   }
 };
 

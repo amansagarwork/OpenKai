@@ -127,7 +127,7 @@ export default function OpenPasteHub() {
 
   if (result) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen">
         <div className="px-6 py-10 flex items-center justify-center">
           <div className="w-full max-w-xl">
             <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
@@ -182,7 +182,7 @@ export default function OpenPasteHub() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       <div className="px-6 py-10 flex items-center justify-center">
         <div className="w-full max-w-4xl">
           <div className="mb-6">

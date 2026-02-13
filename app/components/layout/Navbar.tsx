@@ -17,7 +17,15 @@ export default function Navbar() {
   const servicesRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  const [token, setToken] = useState(getToken());
+  const [token, setToken] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
+
+  // Initialize token after component mounts
+  useEffect(() => {
+    setMounted(true);
+    setToken(getToken());
+  }, []);
+
   const email = token ? getEmailFromToken(token) : "";
   const username = token ? getUsernameFromToken(token) : "";
 
@@ -44,6 +52,8 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+    
     const syncToken = () => setToken(getToken());
 
     window.addEventListener("storage", syncToken);
@@ -53,11 +63,11 @@ export default function Navbar() {
       window.removeEventListener("storage", syncToken);
       window.removeEventListener("auth-change", syncToken as EventListener);
     };
-  }, []);
+  }, [mounted]);
 
   return (
     <>
-      <div className="sticky top-2 z-50 mx-auto max-w-[900px] px-4 w-full">
+      <div className="sticky top-2 z-50 w-full">
         <div className="border-b border-slate-200 bg-white/80 backdrop-blur-md rounded-xl px-5 sm:px-6 lg:px-8 py-4">
           
           {/* ✅ FIXED STRUCTURE HERE */}
@@ -336,7 +346,9 @@ export default function Navbar() {
 
             {/* RIGHT SIDE */}
             <div className="hidden md:flex items-center gap-4">
-              {token ? (
+              {!mounted ? (
+                <div className="h-10 w-10 rounded-full bg-slate-200 animate-pulse"></div>
+              ) : token ? (
                 <button
                   onClick={() => router.push("/profile")}
                   className="h-10 w-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-semibold text-sm"

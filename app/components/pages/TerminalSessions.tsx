@@ -168,7 +168,7 @@ export default function TerminalSessions() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen">
         <div className="max-w-4xl mx-auto px-6 py-10">
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 border-4 border-slate-300 border-t-slate-900 rounded-full animate-spin" />
@@ -179,7 +179,7 @@ export default function TerminalSessions() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       <ConfirmModal
         open={confirmDeleteOpen}
         title="Delete terminal session?"

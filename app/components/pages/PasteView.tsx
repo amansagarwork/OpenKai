@@ -98,7 +98,7 @@ export default function PasteView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen">
         <div className="flex items-center justify-center p-6">
           <div className="text-center">
             <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
@@ -114,7 +114,7 @@ export default function PasteView() {
     const isNotFound = error === 'Paste not found';
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen">
         <div className="flex items-center justify-center p-6">
           <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full border border-slate-200 text-center">
             <div className="flex flex-col items-center">
@@ -167,7 +167,7 @@ export default function PasteView() {
   if (!paste) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">

@@ -308,7 +308,7 @@ fetch("http://localhost:3000/api");  // Line 24 - localhost should warn
 fetch("https://bit.ly/abc123");  // Line 27 - URL shortener should info`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       <div className="max-w-6xl mx-auto px-6 py-10">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-6">

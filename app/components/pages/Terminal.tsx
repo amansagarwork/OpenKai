@@ -213,7 +213,7 @@ export default function Terminal({ sessionId }: { sessionId?: string }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="max-w-4xl mx-auto px-6 py-4">
         <BackButton />

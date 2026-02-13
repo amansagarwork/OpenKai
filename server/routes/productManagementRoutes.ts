@@ -13,7 +13,9 @@ import {
   getBoard,
   moveIssue,
   addComment,
-  getReports
+  getReports,
+  testDatabase,
+  getCalendar
 } from '../controllers/productManagementController';
 
 const router = Router();
@@ -37,6 +39,9 @@ router.delete('/sprints/:id', deleteSprint);
 // Board
 router.get('/board', getBoard);
 
+// Calendar
+router.get('/calendar', getCalendar);
+
 // Move issue (drag and drop)
 router.post('/issues/:id/move', moveIssue);
 
@@ -45,5 +50,8 @@ router.post('/issues/:id/comments', addComment);
 
 // Reports
 router.get('/reports', getReports);
+
+// Test database
+router.get('/test', testDatabase);
 
 export default router;

@@ -26,7 +26,7 @@ interface AnimatedMainProps {
 export default function AnimatedMain({ children }: AnimatedMainProps) {
   return (
     <motion.main 
-      className="mx-auto max-w-[900px] px-4 flex-1 w-full"
+      className="flex-1 w-full bg-white"
       initial="initial"
       animate="animate"
       exit="exit"

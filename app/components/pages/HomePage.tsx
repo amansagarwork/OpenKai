@@ -60,7 +60,7 @@ export default function HomePage() {
 
   if (createdUrl) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen">
         <div className="flex items-center justify-center p-6">
           <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full border border-slate-200">
             <div className="flex items-center gap-3 mb-6">
@@ -132,7 +132,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       <div className="flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-4xl w-full border border-slate-200">
           <div className="flex items-center gap-3 mb-6">
