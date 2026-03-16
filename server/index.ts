@@ -1,67 +1,59 @@
 import dotenv from 'dotenv';
 import path from 'path';
-
-// Load env vars FIRST before any other imports
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
-
 import express from 'express';
 import cors from 'cors';
-import { authRouter, pasteRouter, urlRouter, terminalRouter, lintRouter } from './modules';
+import mongoose from 'mongoose';
+import { startServer as startApp } from './startServer';
+import { seedServices } from './services/serviceSeeder';
+import authRoutes from './routes/authRoutes';
+import pasteRoutes from './routes/pasteRoutes';
+import urlRoutes from './routes/urlRoutes';
+import serviceRoutes from './routes/serviceRoutes';
+import analyticsRoutes from './routes/analyticsRoutes';
+import terminalRouter from './modules/terminal/routes';
+import lintRouter from './modules/lint/routes';
 import productManagementRoutes from './routes/productManagementRoutes';
-import { query } from './config/db';
-import { cleanupService } from './services/cleanupService';
 import { redirectToOriginalUrl } from './modules/url/controllers';
 
-// Ensure logs directory exists
-import fs from 'fs';
-
-const logsDir = path.join(__dirname, '..', 'logs');
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
-}
+// Load env vars FIRST before any other imports
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3002;
+
+// CORS configuration
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://192.168.0.116:3000'],
+  credentials: true,
+}));
 
 // Middleware
-const corsOrigins = process.env.NODE_ENV === 'development' 
-  ? true // Allow all origins in development
-  : [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
-    'http://127.0.0.1:3002',
-    'http://152.160.0.78:3000',
-    'http://152.160.0.78:3001',
-    'http://152.160.0.78:3002',
-    `http://${process.env.HOST || '0.0.0.0'}:3000`,
-    `http://${process.env.HOST || '0.0.0.0'}:3001`,
-    `http://${process.env.HOST || '0.0.0.0'}:3002`,
-  ];
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-app.use(cors({
-  origin: corsOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+// API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/pastes', pasteRoutes);
+app.use('/api/urls', urlRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/terminal', terminalRouter);
+app.use('/api/lint', lintRouter);
+app.use('/api/product-management', productManagementRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    services: 'operational'
+  });
 });
 
-// API routes
-app.use('/api/pastes', pasteRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/urls', urlRouter);
-app.use('/api/terminal', terminalRouter);
-app.use('/api/lint', lintRouter);
-app.use('/api/product', productManagementRoutes);
+// Seed services on startup
+mongoose.connection.once('open', () => {
+  seedServices();
+});
 
 // URL redirect route (must be before static files)
 app.get('/u/:shortId', redirectToOriginalUrl);
@@ -83,28 +75,5 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start the server
-const startServer = async () => {
-  try {
-    // Test the database connection
-    await query('SELECT NOW()');
-    console.log('Database connection successful!');
-
-    // Start the cleanup service
-    cleanupService.start();
-
-    const HOST = process.env.HOST || '0.0.0.0';
-    const PORT = process.env.PORT || 3001;
-
-    app.listen(Number(PORT), HOST, () => {
-      console.log(`Server is running on port ${PORT}`);
-      console.log(`Local: http://localhost:${PORT}`);
-      console.log(`Network: http://192.168.0.146:${PORT}`);
-    });
-  } catch (error) {
-    console.error('Failed to connect to the database:', error);
-    process.exit(1);
-  }
-};
-
-startServer();
+// Start server
+startApp(app, PORT);

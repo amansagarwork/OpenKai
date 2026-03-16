@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Copy, Check, Bug, Play } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function RegexTester() {
+interface RegexTesterProps {
+  embedded?: boolean;
+}
+
+export default function RegexTester({ embedded = false }: RegexTesterProps) {
   const [pattern, setPattern] = useState('');
   const [flags, setFlags] = useState('g');
   const [testString, setTestString] = useState('');
@@ -51,12 +55,14 @@ export default function RegexTester() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Regex Tester</h1>
-          <p className="text-slate-600">Test and validate regular expressions</p>
-        </div>
+    <div className={embedded ? "w-full" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-4xl mx-auto"}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Regex Tester</h1>
+            <p className="text-slate-600">Test and validate regular expressions</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="mb-4">

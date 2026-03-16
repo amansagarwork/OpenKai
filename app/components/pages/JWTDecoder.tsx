@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Copy, Check, Unlock, AlertCircle } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function JWTDecoder() {
+export default function JWTDecoder({ embedded = false }: { embedded?: boolean }) {
   const [token, setToken] = useState('');
   const [header, setHeader] = useState('');
   const [payload, setPayload] = useState('');
@@ -52,8 +52,8 @@ export default function JWTDecoder() {
   const sampleJWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className={embedded ? "h-full overflow-y-auto p-6" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-6xl mx-auto"}>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">JWT Decoder</h1>
           <p className="text-slate-600">Decode and inspect JSON Web Tokens</p>

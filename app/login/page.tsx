@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import LayoutWithNav from '../layout-with-nav';
 import Login from '../components/pages/Login';
 
 export const metadata: Metadata = {
@@ -8,10 +9,10 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen">
+    <LayoutWithNav>
       <div className="max-w-[900px] mx-auto w-full px-4">
         <Login />
       </div>
-    </main>
+    </LayoutWithNav>
   );
 }

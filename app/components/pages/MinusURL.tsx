@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Link2, Loader2, Copy, Check, ExternalLink } from 'lucide-react';
+import { Link2, Loader2, Copy, Check, ExternalLink, Star } from 'lucide-react';
 import { getToken } from '../../lib/auth';
 
 interface ShortenedURL {
@@ -76,13 +76,74 @@ function validateUrl(input: string): { valid: boolean; normalized: string; error
   }
 }
 
-export default function MinusURL() {
+export default function MinusURL({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [shortened, setShortened] = useState<ShortenedURL | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const token = getToken();
+
+  const checkIfFavorite = async (shortId: string) => {
+    if (!token) return;
+    try {
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/me`;
+      const response = await fetch(apiUrl, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const isFav = data.favorites?.some((f: any) => f.id === shortId);
+        setIsFavorite(!!isFav);
+      }
+    } catch (error) {
+      console.error('Failed to check favorite status:', error);
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+    if (!shortened) return;
+
+    try {
+      if (isFavorite) {
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/favorites/${shortened.shortId}`;
+        const response = await fetch(apiUrl, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          setIsFavorite(false);
+        }
+      } else {
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/favorites`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            id: shortened.shortId,
+            type: 'url',
+            title: shortened.originalUrl.substring(0, 50) + '...',
+            slug: shortened.shortId
+          })
+        });
+        if (response.ok) {
+          setIsFavorite(true);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+    }
+  };
 
   const handleShorten = async () => {
     // Validate URL with security checks
@@ -153,9 +214,11 @@ export default function MinusURL() {
   };
 
   if (shortened) {
+    // Check if favorite when shortened URL is shown
+    checkIfFavorite(shortened.shortId);
     return (
-      <div className="min-h-screen">
-        <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="h-full overflow-y-auto p-6">
+        <div className={embedded ? "w-full" : "max-w-4xl mx-auto"}>
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-5 bg-gradient-to-r from-violet-600 to-violet-700 flex items-center gap-3">
               <Link2 className="w-6 h-6 text-white" />
@@ -167,11 +230,20 @@ export default function MinusURL() {
 
             <div className="p-6 space-y-6">
               <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Check className="w-5 h-5 text-green-600" />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <Check className="w-5 h-5 text-green-600" />
+                    </div>
+                    <h2 className="text-lg font-semibold text-green-900">URL Shortened!</h2>
                   </div>
-                  <h2 className="text-lg font-semibold text-green-900">URL Shortened!</h2>
+                  <button
+                    onClick={handleToggleFavorite}
+                    className="p-2 bg-white/50 hover:bg-white rounded-lg transition-colors"
+                    title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    <Star className={`w-5 h-5 ${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-400'}`} />
+                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -236,8 +308,8 @@ export default function MinusURL() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-4xl mx-auto px-6 py-10">
+    <div className="h-full overflow-y-auto p-6">
+      <div className={embedded ? "w-full" : "max-w-4xl mx-auto"}>
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           <div className="px-6 py-5 bg-gradient-to-r from-violet-600 to-violet-700 flex items-center gap-3">
             <Link2 className="w-6 h-6 text-white" />

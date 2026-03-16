@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Copy, Check, FileSpreadsheet, ArrowRightLeft } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function CSVToJSON() {
+interface CSVToJSONProps {
+  embedded?: boolean;
+}
+
+export default function CSVToJSON({ embedded = false }: CSVToJSONProps) {
   const [csvInput, setCsvInput] = useState('');
   const [jsonOutput, setJsonOutput] = useState('');
   const [mode, setMode] = useState<'csv-to-json' | 'json-to-csv'>('csv-to-json');
@@ -83,12 +87,14 @@ Bob Johnson,35,bob@example.com`;
 ]`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">CSV ↔ JSON Converter</h1>
-          <p className="text-slate-600">Convert between CSV and JSON formats</p>
-        </div>
+    <div className={embedded ? "w-full" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-6xl mx-auto"}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">CSV to JSON</h1>
+            <p className="text-slate-600">Convert CSV data to JSON format</p>
+          </div>
+        )}
 
         <div className="flex items-center gap-4 mb-6">
           <button

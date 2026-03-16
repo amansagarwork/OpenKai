@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix for UI scaling issues */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
 /* Global Typography System (Wix Web Typography Rules) */
 @layer base {
   html {
@@ -155,4 +163,13 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Sonner toast close button on right side */
+[data-sonner-toast] [data-close-button] {
+  right: 8px !important;
+  left: auto !important;
+  background: white !important;
+  color: #4d4e52 !important;
+  border: 1px solid #e5e7eb !important;
 }

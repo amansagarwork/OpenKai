@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ProductManagementPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen w-full bg-white dark:bg-slate-950">
       <ProductManagement />
     </main>
   );

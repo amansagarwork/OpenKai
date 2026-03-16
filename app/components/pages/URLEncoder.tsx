@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Copy, Check, ArrowRightLeft, Globe } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function URLEncoder() {
+interface URLEncoderProps {
+  embedded?: boolean;
+}
+
+export default function URLEncoder({ embedded = false }: URLEncoderProps) {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
@@ -41,12 +45,14 @@ export default function URLEncoder() {
   const sampleURL = 'https://example.com/search?q=hello world&page=1';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">URL Encoder/Decoder</h1>
-          <p className="text-slate-600">Encode or decode URL parameters and special characters</p>
-        </div>
+    <div className={embedded ? "w-full" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-4xl mx-auto"}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">URL Encoder/Decoder</h1>
+            <p className="text-slate-600">Encode or decode URL parameters and special characters</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="flex items-center gap-4 mb-6">

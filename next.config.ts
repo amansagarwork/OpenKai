@@ -2,9 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   env: {
-    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://192.168.0.146:3002',
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
   },
   allowedDevOrigins: [
+    '192.168.0.116',
     '192.168.0.146',
     '192.168.11.15',
     'localhost',
@@ -14,7 +15,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://192.168.0.146:3002/api/:path*',
+        destination: 'http://localhost:3002/api/:path*',
       },
     ];
   },

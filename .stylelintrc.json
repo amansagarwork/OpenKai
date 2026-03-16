@@ -1,0 +1,8 @@
+{
+  "name": "OpenKai",
+  "version": "1.0.0",
+  "devDependencies": {
+    "stylelint": "^16.0.0",
+    "stylelint-config-tailwindcss": "^0.0.7"
+  }
+}

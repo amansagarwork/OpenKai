@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, Loader2, LogIn } from 'lucide-react';
 import { setToken } from '../../lib/auth';
+import { showToast } from "../../lib/toast";
 
 export default function Login() {
   const router = useRouter();
@@ -11,7 +12,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -27,8 +27,17 @@ export default function Login() {
     return '';
   };
 
+  const validatePassword = (password: string) => {
+    if (!password) {
+      return 'Password is required';
+    }
+    if (password.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    return '';
+  };
+
   const submit = async () => {
-    setError('');
     setEmailError('');
     setPasswordError('');
 
@@ -39,8 +48,9 @@ export default function Login() {
       return;
     }
 
-    if (!password) {
-      setPasswordError('Password is required');
+    const passwordValidation = validatePassword(password);
+    if (passwordValidation) {
+      setPasswordError(passwordValidation);
       return;
     }
 
@@ -62,20 +72,21 @@ export default function Login() {
         } else if (errorMsg.includes('password')) {
           setPasswordError(errorMsg);
         } else {
-          setError(errorMsg);
+          showToast.error(errorMsg);
         }
         return;
       }
 
       if (typeof data?.token !== 'string') {
-        setError('Invalid server response');
+        showToast.error('Invalid server response');
         return;
       }
 
       setToken(data.token, rememberMe);
+      showToast.success('Login successful!');
       router.push('/');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Login failed');
+      showToast.error(e instanceof Error ? e.message : 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -83,19 +94,19 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-white">
-       <div className="max-w-lg mx-auto px-6 pt-24">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-          <div className="px-6 py-5 bg-gradient-to-r from-slate-900 to-slate-800 flex items-center gap-3">
-            <LogIn className="w-6 h-6 text-white" />
+       <div className="max-w-md mx-auto px-4 pt-16">
+        <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+          <div className="px-4 py-3 bg-gradient-to-r from-slate-900 to-slate-800 flex items-center gap-2">
+            <LogIn className="w-5 h-5 text-white" />
             <div>
-              <div className="text-white font-bold text-xl">Login</div>
-              <div className="text-slate-200 text-sm">Access history and saved pastes</div>
+              <div className="text-white font-bold text-lg">Login</div>
+              <div className="text-slate-200 text-xs">Access history and saved pastes</div>
             </div>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-4 space-y-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1.5">Email</label>
               <input
                 value={email}
                 onChange={(e) => {
@@ -103,19 +114,19 @@ export default function Login() {
                   setEmailError('');
                 }}
                 placeholder="you@company.com"
-                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 outline-none transition-all ${
+                className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 outline-none transition-all text-sm ${
                   emailError 
                     ? 'border-red-400 focus:border-red-500 focus:ring-red-100' 
                     : 'border-slate-300 focus:border-slate-700 focus:ring-slate-200'
                 }`}
               />
               {emailError && (
-                <p className="mt-1.5 text-sm text-red-600">{emailError}</p>
+                <p className="mt-1 text-xs text-red-600">{emailError}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1.5">Password</label>
               <input
                 value={password}
                 onChange={(e) => {
@@ -123,15 +134,15 @@ export default function Login() {
                   setPasswordError('');
                 }}
                 type="password"
-                placeholder="••••••••"
-                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 outline-none transition-all ${
+                placeholder="At least 6 characters"
+                className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 outline-none transition-all text-sm ${
                   passwordError 
                     ? 'border-red-400 focus:border-red-500 focus:ring-red-100' 
                     : 'border-slate-300 focus:border-slate-700 focus:ring-slate-200'
                 }`}
               />
               {passwordError && (
-                <p className="mt-1.5 text-sm text-red-600">{passwordError}</p>
+                <p className="mt-1 text-xs text-red-600">{passwordError}</p>
               )}
             </div>
 
@@ -144,27 +155,20 @@ export default function Login() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 text-slate-900 focus:ring-slate-900 border-slate-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700">
+              <label htmlFor="remember-me" className="ml-2 block text-xs text-slate-700">
                 Remember me
               </label>
             </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-                <p className="text-sm text-red-800">{error}</p>
-              </div>
-            )}
 
             <button
               type="button"
               onClick={submit}
               disabled={loading}
-              className="w-full px-6 py-3 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+              className="w-full px-4 py-2.5 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 text-sm"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Logging in...
                 </>
               ) : (
@@ -172,7 +176,7 @@ export default function Login() {
               )}
             </button>
 
-            <div className="text-sm text-slate-600 text-center">
+            <div className="text-xs text-slate-600 text-center">
               Don't have an account?{' '}
               <button
                 type="button"

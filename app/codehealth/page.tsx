@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import WorkspaceLayout from '../components/layout/WorkspaceLayout';
 import CodeHealth from '../components/pages/CodeHealth';
 
 export const metadata: Metadata = {
@@ -8,8 +9,12 @@ export const metadata: Metadata = {
 
 export default function CodeHealthPage() {
   return (
-    <main className="min-h-screen">
+    <WorkspaceLayout 
+      title="Code Health" 
+      iconKey="codehealth"
+      toolType="devtool"
+    >
       <CodeHealth />
-    </main>
+    </WorkspaceLayout>
   );
 }

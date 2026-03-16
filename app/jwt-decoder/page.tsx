@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import LayoutWithNav from '../layout-with-nav';
 import JWTDecoder from '../components/pages/JWTDecoder';
 
 export const metadata: Metadata = {
@@ -8,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function JWTDecoderPage() {
   return (
-    <main className="min-h-screen">
+    <LayoutWithNav>
       <JWTDecoder />
-    </main>
+    </LayoutWithNav>
   );
 }

@@ -7,21 +7,8 @@ type AuthedUser = {
 };
 
 const generatePasteId = (): string => {
-  const letters = 'abcdefghijklmnopqrstuvwxyz';
-  const digits = '0123456789';
-  let id = '';
-  
-  // Add 3 random letters
-  for (let i = 0; i < 3; i++) {
-    id += letters[Math.floor(Math.random() * letters.length)];
-  }
-  
-  // Add 3 random digits
-  for (let i = 0; i < 3; i++) {
-    id += digits[Math.floor(Math.random() * digits.length)];
-  }
-  
-  return id;
+  // Generate random 6-digit numeric ID
+  return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
 export const listMyPastes = async (req: Request, res: Response) => {

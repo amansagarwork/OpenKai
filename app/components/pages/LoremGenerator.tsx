@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Copy, Check, RefreshCw, Type } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function LoremGenerator() {
+interface LoremGeneratorProps {
+  embedded?: boolean;
+}
+
+export default function LoremGenerator({ embedded = false }: LoremGeneratorProps) {
   const [paragraphs, setParagraphs] = useState(3);
   const [sentences, setSentences] = useState(5);
   const [output, setOutput] = useState('');
@@ -66,12 +70,14 @@ export default function LoremGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Lorem Ipsum Generator</h1>
-          <p className="text-slate-600">Generate placeholder text for your designs</p>
-        </div>
+    <div className={embedded ? "w-full" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-3xl mx-auto"}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Lorem Ipsum Generator</h1>
+            <p className="text-slate-600">Generate placeholder text for your designs</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="flex items-center gap-4 mb-6">

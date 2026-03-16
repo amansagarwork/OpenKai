@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import LayoutWithNav from '../layout-with-nav';
 import Profile from '../components/pages/Profile';
 
 export const metadata: Metadata = {
@@ -8,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function ProfilePage() {
   return (
-    <main className="min-h-screen">
+    <LayoutWithNav>
       <Profile />
-    </main>
+    </LayoutWithNav>
   );
 }

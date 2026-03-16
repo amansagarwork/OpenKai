@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Copy, Check, Hash, RefreshCw } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function HashGenerator() {
+interface HashGeneratorProps {
+  embedded?: boolean;
+}
+
+export default function HashGenerator({ embedded = false }: HashGeneratorProps) {
   const [input, setInput] = useState('');
   const [algorithm, setAlgorithm] = useState<'SHA-256' | 'SHA-512' | 'SHA-1'>('SHA-256');
   const [hash, setHash] = useState('');
@@ -40,12 +44,14 @@ export default function HashGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Hash Generator</h1>
-          <p className="text-slate-600">Generate cryptographic hashes (SHA-256, SHA-512, SHA-1)</p>
-        </div>
+    <div className={embedded ? "w-full" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-3xl mx-auto"}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Hash Generator</h1>
+            <p className="text-slate-600">Generate cryptographic hashes (SHA-256, SHA-512, SHA-1)</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="mb-4">

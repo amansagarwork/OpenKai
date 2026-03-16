@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import WorkspaceLayout from '../components/layout/WorkspaceLayout';
 import MinusURL from '../components/pages/MinusURL';
 
 export const metadata: Metadata = {
@@ -8,8 +9,12 @@ export const metadata: Metadata = {
 
 export default function MinusURLPage() {
   return (
-    <main className="min-h-screen">
+    <WorkspaceLayout 
+      title="MinusURL" 
+      iconKey="minusurl"
+      toolType="devtool"
+    >
       <MinusURL />
-    </main>
+    </WorkspaceLayout>
   );
 }

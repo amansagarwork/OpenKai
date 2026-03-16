@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Copy, Check, Palette } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function ColorConverter() {
+interface ColorConverterProps {
+  embedded?: boolean;
+}
+
+export default function ColorConverter({ embedded = false }: ColorConverterProps) {
   const [hex, setHex] = useState('#3B82F6');
   const [rgb, setRgb] = useState({ r: 59, g: 130, b: 246 });
   const [hsl, setHsl] = useState({ h: 217, s: 91, l: 60 });
@@ -74,12 +78,14 @@ export default function ColorConverter() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Color Converter</h1>
-          <p className="text-slate-600">Convert between HEX, RGB, and HSL color formats</p>
-        </div>
+    <div className={embedded ? "w-full" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-3xl mx-auto"}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Color Converter</h1>
+            <p className="text-slate-600">Convert between HEX, RGB, and HSL color formats</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
           <div 

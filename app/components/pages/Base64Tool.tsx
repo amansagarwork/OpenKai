@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Copy, Check, ArrowRightLeft } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function Base64Tool() {
+export default function Base64Tool({ embedded = false }: { embedded?: boolean }) {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
@@ -39,8 +39,8 @@ export default function Base64Tool() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className={embedded ? "h-full overflow-y-auto p-6" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-4xl mx-auto"}>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Base64 Encoder/Decoder</h1>
           <p className="text-slate-600">Encode text to Base64 or decode Base64 to text</p>

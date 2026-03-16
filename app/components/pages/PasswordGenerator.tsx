@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Copy, Check, RefreshCw, Shield } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function PasswordGenerator() {
+interface PasswordGeneratorProps {
+  embedded?: boolean;
+}
+
+export default function PasswordGenerator({ embedded = false }: PasswordGeneratorProps) {
   const [password, setPassword] = useState('');
   const [length, setLength] = useState(16);
   const [options, setOptions] = useState({
@@ -78,12 +82,14 @@ export default function PasswordGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Password Generator</h1>
-          <p className="text-slate-600">Generate secure, random passwords</p>
-        </div>
+    <div className={embedded ? "w-full" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-2xl mx-auto"}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Password Generator</h1>
+            <p className="text-slate-600">Generate secure, random passwords</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="mb-6">

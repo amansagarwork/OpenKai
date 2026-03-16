@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import LayoutWithNav from '../layout-with-nav';
 import OpenPasteHub from '../components/pages/OpenPasteHub';
 
 export const metadata: Metadata = {
@@ -8,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function OpenKaiPage() {
   return (
-    <main className="min-h-screen">
+    <LayoutWithNav>
       <OpenPasteHub />
-    </main>
+    </LayoutWithNav>
   );
 }

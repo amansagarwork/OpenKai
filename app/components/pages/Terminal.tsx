@@ -28,7 +28,7 @@ function BackButton() {
   );
 }
 
-export default function Terminal({ sessionId }: { sessionId?: string }) {
+export default function Terminal({ embedded = false, sessionId }: { embedded?: boolean, sessionId?: string }) {
   const router = useRouter();
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<CommandHistory[]>([]);
@@ -213,21 +213,23 @@ export default function Terminal({ sessionId }: { sessionId?: string }) {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className={embedded ? "h-full overflow-y-auto p-6" : "min-h-screen"}>
       {/* Header */}
-      <div className="max-w-4xl mx-auto px-6 py-4">
-        <BackButton />
+      <div className={embedded ? "w-full" : "max-w-4xl mx-auto px-6 py-4"}>
+        {!embedded && <BackButton />}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           <div className="px-6 py-5 bg-white flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => window.history.back()}
-                className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center hover:bg-slate-800 transition-colors"
-                aria-label="Back"
-              >
-                <ArrowLeft className="w-5 h-5 text-white" />
-              </button>
+              {!embedded && (
+                <button
+                  type="button"
+                  onClick={() => window.history.back()}
+                  className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center hover:bg-slate-800 transition-colors"
+                  aria-label="Back"
+                >
+                  <ArrowLeft className="w-5 h-5 text-white" />
+                </button>
+              )}
               <div>
                 <h1 className="text-lg font-semibold text-slate-900">
                   {sessionName || 'Terminal'}
@@ -263,12 +265,14 @@ export default function Terminal({ sessionId }: { sessionId?: string }) {
                   Reopen Terminal
                 </button>
               )}
-              <button
-                onClick={() => router.push('/terminal')}
-                className="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors"
-              >
-                Back to Sessions
-              </button>
+              {!embedded && (
+                <button
+                  onClick={() => router.push('/terminal')}
+                  className="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Back to Sessions
+                </button>
+              )}
               <button
                 onClick={() => setShowHelp(!showHelp)}
                 className="p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors"
@@ -281,8 +285,8 @@ export default function Terminal({ sessionId }: { sessionId?: string }) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-6">
-        <BackButton />
+      <div className={embedded ? "w-full" : "max-w-4xl mx-auto px-6 py-6"}>
+        {!embedded && <BackButton />}
         {/* Help Panel */}
         {showHelp && (
           <motion.div

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import LayoutWithNav from '../layout-with-nav';
 import Base64Tool from '../components/pages/Base64Tool';
 
 export const metadata: Metadata = {
@@ -8,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function Base64ToolPage() {
   return (
-    <main className="min-h-screen">
+    <LayoutWithNav>
       <Base64Tool />
-    </main>
+    </LayoutWithNav>
   );
 }

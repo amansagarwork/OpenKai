@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Copy, Check, Sparkles } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function UUIDGenerator() {
+export default function UUIDGenerator({ embedded = false }: { embedded?: boolean }) {
   const [uuids, setUuids] = useState<string[]>([]);
   const [count, setCount] = useState(1);
   const [copied, setCopied] = useState<string | null>(null);
@@ -37,8 +37,8 @@ export default function UUIDGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className={embedded ? "h-full overflow-y-auto p-6" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-4xl mx-auto"}>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">UUID Generator</h1>
           <p className="text-slate-600">Generate unique identifiers for your applications</p>

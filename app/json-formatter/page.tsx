@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import LayoutWithNav from '../layout-with-nav';
 import JSONFormatter from '../components/pages/JSONFormatter';
 
 export const metadata: Metadata = {
@@ -8,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function JSONFormatterPage() {
   return (
-    <main className="min-h-screen">
+    <LayoutWithNav >
       <JSONFormatter />
-    </main>
+    </LayoutWithNav>
   );
 }

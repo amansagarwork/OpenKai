@@ -17,9 +17,8 @@ class CleanupService {
   private readonly CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
   public async cleanupExpiredPastes(): Promise<number> {
-    const client = await db.connect();
     try {
-      const result = await client.query<PasteIdRow>(
+      const result = await db.query(
         'DELETE FROM pastes WHERE expires_at < NOW() RETURNING paste_id'
       );
       
@@ -32,8 +31,6 @@ class CleanupService {
     } catch (error) {
       logger.error('Error cleaning up expired pastes:', error);
       throw error;
-    } finally {
-      client.release();
     }
   }
 

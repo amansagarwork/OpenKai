@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Copy, Check, FileJson, AlertCircle } from 'lucide-react';
 import { copyToClipboard } from '../../lib/clipboard';
 
-export default function JSONFormatter() {
+export default function JSONFormatter({ embedded = false }: { embedded?: boolean }) {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
@@ -50,8 +50,8 @@ export default function JSONFormatter() {
 }`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className={embedded ? "h-full overflow-y-auto p-6" : "min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6"}>
+      <div className={embedded ? "w-full" : "max-w-6xl mx-auto"}>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">JSON Formatter</h1>
           <p className="text-slate-600">Format, validate, and minify JSON data</p>
